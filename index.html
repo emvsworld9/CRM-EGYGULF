@@ -182,6 +182,9 @@ tbody tr:hover td{background:rgba(255,255,255,.03);color:var(--text)}
 .country-opt{padding:9px 13px;font-size:12.5px;color:var(--text2);cursor:pointer;transition:background .15s,color .15s;display:flex;align-items:center;gap:8px;}
 .country-opt:hover{background:rgba(245,166,35,.1);color:var(--gold)}
 
+/* DUP BLOCKED INPUT */
+.field input.dup-blocked{border-color:var(--red)!important;background:rgba(255,61,104,.07)!important;box-shadow:0 0 0 3px rgba(255,61,104,.15)!important;}
+
 /* MODAL */
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:999;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.open{display:flex;animation:fadeIn .2s ease}
@@ -203,6 +206,14 @@ tbody tr:hover td{background:rgba(255,255,255,.03);color:var(--text)}
 .alert-error{background:var(--red-bg);color:var(--red);border:1px solid rgba(255,61,104,.2)}
 .alert-success{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,229,160,.2)}
 .alert-info{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(61,142,255,.2)}
+
+/* DUP HARD BLOCK BANNER */
+.dup-hard-block{display:none;background:rgba(255,61,104,.1);border:1.5px solid rgba(255,61,104,.4);border-radius:var(--radius-lg);padding:14px 18px;margin-bottom:16px;animation:shake .35s ease;}
+.dup-hard-block.show{display:flex;align-items:flex-start;gap:12px;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.dup-hard-block .dup-icon{font-size:22px;flex-shrink:0}
+.dup-hard-block .dup-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;color:var(--red);margin-bottom:4px}
+.dup-hard-block .dup-detail{font-size:12px;color:#ff7a96;line-height:1.5}
 
 /* BARS */
 .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
@@ -529,15 +540,24 @@ body:not(.is-admin) .deal-kpi{display:none!important}
       <!-- ADD LEAD -->
       <div class="page" id="page-addlead">
         <div class="section-title">Add New Lead</div>
-        <div id="dup-alert-main" style="display:none" class="alert alert-error">⚠️ <strong>Duplicate!</strong> &nbsp;<span id="dup-match-name"></span></div>
+
+        <!-- HARD DUPLICATE BLOCK BANNER -->
+        <div class="dup-hard-block" id="dup-hard-block">
+          <div class="dup-icon">🚫</div>
+          <div>
+            <div class="dup-title">مسموحش! — رقم مكرر في الداتا بيز</div>
+            <div class="dup-detail" id="dup-hard-detail">هذا الرقم موجود بالفعل.</div>
+          </div>
+        </div>
+
         <div class="card" style="padding:26px">
           <div class="modal-section">Contact Information</div>
           <div class="form-grid">
             <div class="field"><label>Full Name *</label><input id="nl-name" placeholder="Ahmed Al Mansouri"></div>
             <div class="field"><label>Company</label><input id="nl-company" placeholder="Gulf Foods Trading LLC"></div>
-            <div class="field"><label>Phone *</label><input id="nl-phone" placeholder="+966 5X XXXX XXXX" oninput="liveCheckDup('nl-phone','dup-alert-main','dup-match-name')"></div>
+            <div class="field"><label>Phone *</label><input id="nl-phone" placeholder="+966 5X XXXX XXXX" oninput="liveCheckDup('nl-phone')"></div>
             <div class="field"><label>Alt Phone</label><input id="nl-phone2" placeholder="+966 5X XXXX XXXX"></div>
-            <div class="field"><label>WhatsApp</label><input id="nl-whatsapp" placeholder="+966 5X XXXX XXXX" oninput="liveCheckDup('nl-whatsapp','dup-alert-main','dup-match-name')"></div>
+            <div class="field"><label>WhatsApp</label><input id="nl-whatsapp" placeholder="+966 5X XXXX XXXX" oninput="liveCheckDup('nl-whatsapp')"></div>
             <div class="field"><label>Email</label><input id="nl-email" placeholder="email@company.com" type="email"></div>
             <div class="field country-wrap">
               <label>Country *</label>
@@ -567,7 +587,7 @@ body:not(.is-admin) .deal-kpi{display:none!important}
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
             <button class="btn btn-outline" onclick="clearLeadForm()">Clear</button>
-            <button class="btn btn-gold" onclick="saveLead()">Save Lead →</button>
+            <button class="btn btn-gold" id="save-lead-btn" onclick="saveLead()">Save Lead →</button>
           </div>
         </div>
       </div>
@@ -825,7 +845,7 @@ const GS_SHEET_ID = '1CWuACOmI4vYkuf3brZ3h1JTudQp0xrpzOH1t1km7evU';
 const ADMIN_CODE  = 'EgyGulf2024';
 
 // ═══════════════════════════════════════════════════════
-// IN-MEMORY STATE  (بيتعبى من Sheets عند التحميل)
+// IN-MEMORY STATE
 // ═══════════════════════════════════════════════════════
 let STATE = {
   leads:     [],
@@ -836,7 +856,6 @@ let STATE = {
   dupStats:  { today:0, total:0, merged:0, pending:0 }
 };
 
-// localStorage — للبيانات اللي مش في Sheets (pairs, notifs, dupLog)
 const LS = {
   get: (k, d=[]) => { try{ return JSON.parse(localStorage.getItem('eg_'+k)) || d }catch{ return d } },
   set: (k, v)    => localStorage.setItem('eg_'+k, JSON.stringify(v))
@@ -870,7 +889,6 @@ async function gsPost(body) {
   });
 }
 
-// ── تحويل row من Sheets لـ employee object ──
 function rowToEmployee(row) {
   if (!row || !row[0]) return null;
   return {
@@ -890,7 +908,6 @@ function employeeToRow(e) {
   return [e.id, e.name, e.email, e.password, e.role, e.team||'', e.phone||'', e.color||'#1a2455', e.status||'active'];
 }
 
-// ── تحويل row من Sheets لـ lead object ──
 function rowToLead(row) {
   if (!row || !row[0]) return null;
   function fbn(name){ if(!name)return''; const e=STATE.employees.find(x=>x.name===name); return e?e.id:''; }
@@ -935,29 +952,22 @@ function leadToRow(l) {
 }
 
 // ═══════════════════════════════════════════════════════
-// SYNC — يجيب كل البيانات من Sheets
+// SYNC
 // ═══════════════════════════════════════════════════════
 async function syncNow(silent=false) {
   setSyncIndicator('syncing');
   try {
     const data = await gsGet('getAll');
-
-    // Employees
     if (data.employees && data.employees.length > 1) {
       STATE.employees = data.employees.slice(1).map(rowToEmployee).filter(Boolean);
     }
-
-    // Leads (بعد الموظفين عشان نعمل name→id صح)
     if (data.leads && data.leads.length > 1) {
       STATE.leads = data.leads.slice(1).map(rowToLead).filter(Boolean);
     }
-
-    // من localStorage
     STATE.pairs         = LS.get('pairs', []);
     STATE.notifications = LS.get('notifications', []);
     STATE.dupLog        = LS.get('dupLog', []);
     STATE.dupStats      = LS.get('dupStats', {today:0,total:0,merged:0,pending:0});
-
     setSyncIndicator('ok');
     updateSyncStatus();
     if (!silent) toast('✅ Synced — '+STATE.leads.length+' leads, '+STATE.employees.length+' employees', 'success');
@@ -987,7 +997,6 @@ function updateSyncStatus() {
   if (ecnt) ecnt.textContent = STATE.employees.length;
 }
 
-// Auto sync كل 3 دقايق
 setInterval(() => syncNow(true), 3 * 60 * 1000);
 
 // ═══════════════════════════════════════════════════════
@@ -1166,45 +1175,166 @@ function renderPage(p){
   if(p==='notifications') renderNotifications();
   if(p==='admin')       renderAdmin();
   if(p==='duplicates')  renderDuplicates();
-  if(p==='addlead')     populateLeadFormSelects();
+  if(p==='addlead')     { populateLeadFormSelects(); resetDupBlock(); }
 }
 
 // ═══════════════════════════════════════════════════════
-// DUPLICATE DETECTION
+// ══  DUPLICATE DETECTION — HARD BLOCK  ══════════════════
 // ═══════════════════════════════════════════════════════
-let dupTimer=null;
-function liveCheckDup(inputId,alertId,nameId){
-  clearTimeout(dupTimer);
-  dupTimer=setTimeout(()=>{
-    const val=document.getElementById(inputId).value.replace(/\s+/g,'');
-    if(val.length<7){document.getElementById(alertId).style.display='none';return;}
-    const match=STATE.leads.find(l=>{
-      const p1=(l.phone||'').replace(/\s+/g,''),wa=(l.whatsapp||'').replace(/\s+/g,'');
-      return normalizePhone(p1)===normalizePhone(val)||normalizePhone(wa)===normalizePhone(val);
-    });
-    if(match){document.getElementById(alertId).style.display='flex';document.getElementById(nameId).textContent=match.name+' ('+match.company+')';}
-    else document.getElementById(alertId).style.display='none';
-  },500);
+
+function normalizePhone(p){
+  if(!p) return '';
+  p = p.replace(/[\s\-\(\)\.]/g,'');
+  if(p.startsWith('00')) p = '+' + p.slice(2);
+  return p;
 }
-function normalizePhone(p){if(!p)return'';p=p.replace(/[\s\-\(\)\.]/g,'');if(p.startsWith('00'))p='+'+p.slice(2);return p;}
+
+// كل الأرقام الموجودة في الداتا (مجمعة ومعيارية)
+function getAllExistingPhones(excludeId) {
+  const phones = [];
+  STATE.leads.forEach(l => {
+    if (excludeId && l.id === excludeId) return; // استثناء للـ edit
+    if (l.phone)    phones.push({ norm: normalizePhone(l.phone),    lead: l, field: 'Phone' });
+    if (l.whatsapp) phones.push({ norm: normalizePhone(l.whatsapp), lead: l, field: 'WhatsApp' });
+  });
+  return phones;
+}
+
+// تأكد إن الرقم مش موجود — بترجع الـ lead المكرر أو null
+function findDuplicatePhone(val, excludeId) {
+  const norm = normalizePhone(val);
+  if (norm.length < 7) return null;
+  const existing = getAllExistingPhones(excludeId);
+  return existing.find(e => e.norm === norm) || null;
+}
+
+// ── Live check وأنت بتكتب ──
+let _dupTimer = null;
+function liveCheckDup(inputId) {
+  clearTimeout(_dupTimer);
+  _dupTimer = setTimeout(() => {
+    const inp = document.getElementById(inputId);
+    if (!inp) return;
+    const val = inp.value;
+    const dup = findDuplicatePhone(val);
+
+    if (dup) {
+      // حمّر الحقل
+      inp.classList.add('dup-blocked');
+      showDupBlock(
+        `الرقم "${val}" موجود بالفعل عند الليد: <strong>${dup.lead.name}</strong> (${dup.lead.company||'—'}) · ${dup.field}`
+      );
+      // عطّل زرار الحفظ
+      blockSaveBtn(true);
+    } else {
+      inp.classList.remove('dup-blocked');
+      // تحقق من باقي الحقول قبل ما تفتح الزرار
+      recheckAllPhoneFields();
+    }
+  }, 400);
+}
+
+// تتحقق من كل الحقول دفعة واحدة (لو حد شيّل رقم مكرر يتأكد مش في حقل تاني)
+function recheckAllPhoneFields() {
+  const phoneVal    = (document.getElementById('nl-phone')    || {}).value || '';
+  const whatsappVal = (document.getElementById('nl-whatsapp') || {}).value || '';
+
+  const dupPhone    = findDuplicatePhone(phoneVal);
+  const dupWhatsapp = findDuplicatePhone(whatsappVal);
+
+  const phoneInp    = document.getElementById('nl-phone');
+  const waInp       = document.getElementById('nl-whatsapp');
+
+  if (dupPhone) {
+    if (phoneInp) phoneInp.classList.add('dup-blocked');
+    showDupBlock(`الرقم "${phoneVal}" موجود بالفعل عند الليد: <strong>${dupPhone.lead.name}</strong> (${dupPhone.lead.company||'—'})`);
+    blockSaveBtn(true);
+  } else if (dupWhatsapp) {
+    if (waInp) waInp.classList.add('dup-blocked');
+    showDupBlock(`رقم الواتساب "${whatsappVal}" موجود بالفعل عند الليد: <strong>${dupWhatsapp.lead.name}</strong> (${dupWhatsapp.lead.company||'—'})`);
+    blockSaveBtn(true);
+  } else {
+    if (phoneInp) phoneInp.classList.remove('dup-blocked');
+    if (waInp)    waInp.classList.remove('dup-blocked');
+    hideDupBlock();
+    blockSaveBtn(false);
+  }
+}
+
+function showDupBlock(html) {
+  const el = document.getElementById('dup-hard-block');
+  const det = document.getElementById('dup-hard-detail');
+  if (el)  el.classList.add('show');
+  if (det) det.innerHTML = html;
+}
+
+function hideDupBlock() {
+  const el = document.getElementById('dup-hard-block');
+  if (el) el.classList.remove('show');
+}
+
+function blockSaveBtn(blocked) {
+  const btn = document.getElementById('save-lead-btn');
+  if (!btn) return;
+  if (blocked) {
+    btn.disabled = true;
+    btn.style.opacity = '0.4';
+    btn.style.cursor  = 'not-allowed';
+    btn.title = 'مش ممكن تحفظ — الرقم مكرر';
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor  = '';
+    btn.title = '';
+  }
+}
+
+function resetDupBlock() {
+  hideDupBlock();
+  blockSaveBtn(false);
+  const phoneInp = document.getElementById('nl-phone');
+  const waInp    = document.getElementById('nl-whatsapp');
+  if (phoneInp) phoneInp.classList.remove('dup-blocked');
+  if (waInp)    waInp.classList.remove('dup-blocked');
+}
 
 // ═══════════════════════════════════════════════════════
-// SAVE LEAD
+// SAVE LEAD — بلوك نهائي قبل الحفظ
 // ═══════════════════════════════════════════════════════
 function getField(id){ const e=document.getElementById(id); return e?e.value.trim():''; }
 
 async function saveLead(){
-  const name=getField('nl-name'), phone=getField('nl-phone');
-  if(!name){toast('Name is required','error');return;}
-  if(!phone){toast('Phone is required','error');return;}
+  const name  = getField('nl-name');
+  const phone = getField('nl-phone');
+  const wa    = getField('nl-whatsapp');
 
-  const normNew=normalizePhone(phone.replace(/\s+/g,''));
-  const dup=STATE.leads.find(l=>normalizePhone((l.phone||'').replace(/\s+/g,''))===normNew);
-  if(dup){ if(!window.confirm('Duplicate: '+dup.name+'. Save anyway?')) return; }
+  if (!name)  { toast('Name is required','error'); return; }
+  if (!phone) { toast('Phone is required','error'); return; }
 
-  const lead={
+  // ── فحص مزدوج قبل الحفظ (خط دفاع ثاني) ──
+  const dupPhone = findDuplicatePhone(phone);
+  if (dupPhone) {
+    showDupBlock(`الرقم "${phone}" موجود بالفعل عند الليد: <strong>${dupPhone.lead.name}</strong>`);
+    blockSaveBtn(true);
+    toast('🚫 مكرر! مش ممكن تحفظ الرقم ده', 'error');
+    // سجّل في الـ dup log
+    logDuplicate(name, dupPhone.lead.name + ' (' + (dupPhone.lead.company||'—') + ')', 'Same Phone');
+    return;
+  }
+  if (wa) {
+    const dupWa = findDuplicatePhone(wa);
+    if (dupWa) {
+      showDupBlock(`رقم الواتساب "${wa}" موجود بالفعل عند الليد: <strong>${dupWa.lead.name}</strong>`);
+      blockSaveBtn(true);
+      toast('🚫 رقم واتساب مكرر! مش ممكن تحفظ', 'error');
+      logDuplicate(name, dupWa.lead.name + ' (' + (dupWa.lead.company||'—') + ')', 'Same WhatsApp');
+      return;
+    }
+  }
+
+  const lead = {
     id:genId('EG'), name, company:getField('nl-company'), phone,
-    phone2:getField('nl-phone2'), whatsapp:getField('nl-whatsapp'),
+    phone2:getField('nl-phone2'), whatsapp:wa,
     email:getField('nl-email'), country:getField('nl-country'), city:getField('nl-city'),
     btype:getField('nl-btype'), product:getField('nl-product'), source:getField('nl-source'),
     socialEmp:getField('nl-social-emp'), salesEmp:getField('nl-sales-emp'),
@@ -1224,9 +1354,25 @@ async function saveLead(){
   nav('leads',null);
 }
 
+// سجّل الـ duplicate في اللوج
+function logDuplicate(blocked, matches, reason) {
+  const entry = {
+    date: new Date().toLocaleString(),
+    blocked, matches, reason
+  };
+  STATE.dupLog.unshift(entry);
+  LS.set('dupLog', STATE.dupLog);
+  // حدّث الإحصائيات
+  const s = STATE.dupStats;
+  s.total++;
+  s.today++;
+  s.pending++;
+  LS.set('dupStats', s);
+}
+
 function clearLeadForm(){
   ['nl-name','nl-company','nl-phone','nl-phone2','nl-whatsapp','nl-email','nl-country','nl-city','nl-deal','nl-notes','nl-followup'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('dup-alert-main').style.display='none';
+  resetDupBlock();
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1343,12 +1489,28 @@ async function updateLead(){
   const phone=document.getElementById('el-phone').value.trim();
   if(!name){toast('Name required','error');return;}
   if(!phone){toast('Phone required','error');return;}
+
+  // فحص duplicate في الـ edit — استثناء الـ lead الحالي نفسه
+  const dupPhone = findDuplicatePhone(phone, id);
+  if (dupPhone) {
+    toast('🚫 الرقم مكرر مع ليد آخر: ' + dupPhone.lead.name, 'error');
+    return;
+  }
+  const wa = document.getElementById('el-whatsapp').value.trim();
+  if (wa) {
+    const dupWa = findDuplicatePhone(wa, id);
+    if (dupWa) {
+      toast('🚫 رقم الواتساب مكرر مع ليد آخر: ' + dupWa.lead.name, 'error');
+      return;
+    }
+  }
+
   const i=STATE.leads.findIndex(l=>l.id===id); if(i<0) return;
   STATE.leads[i] = {
     ...STATE.leads[i], name, phone,
     company:  document.getElementById('el-company').value.trim(),
     phone2:   document.getElementById('el-phone2').value.trim(),
-    whatsapp: document.getElementById('el-whatsapp').value.trim(),
+    whatsapp: wa,
     email:    document.getElementById('el-email').value.trim(),
     country:  document.getElementById('el-country').value.trim(),
     city:     document.getElementById('el-city').value.trim(),
@@ -1650,7 +1812,7 @@ function updateNotifBadge(){
   if(dot) dot.style.display=unread?'':'none';
 }
 
-// DUPLICATES
+// DUPLICATES PAGE
 function renderDuplicates(){
   const s=STATE.dupStats;
   document.getElementById('dup-today').textContent=s.today;
@@ -1703,10 +1865,7 @@ async function saveEmployee(){
 
   STATE.employees.push(emp);
   toast('Saving employee...','');
-
-  // يتحفظ في Google Sheets
   await gsPost({ action:'appendEmployee', row:employeeToRow(emp) });
-
   populateLoginSelect();
   closeModal('add-emp-modal');
   toast('✅ Employee added: '+name,'success');
@@ -1746,21 +1905,17 @@ function backupData(){
 }
 
 // ═══════════════════════════════════════════════════════
-// INIT — أول حاجة بتتعمل
+// INIT
 // ═══════════════════════════════════════════════════════
 async function init(){
   const loadingMsg = document.getElementById('app-loading-msg');
-
-  // جيب البيانات من Google Sheets
   loadingMsg.textContent = 'جاري تحميل البيانات من Google Sheets...';
   await syncNow(true);
 
-  // اخفي الـ loading
   const appLoading = document.getElementById('app-loading');
   appLoading.style.opacity='0'; appLoading.style.transition='opacity .4s';
   setTimeout(()=>appLoading.style.display='none', 400);
 
-  // لو في session محفوظة → دخل مباشرة
   const saved = getSession();
   if(saved && saved.user){
     SESSION = saved;
@@ -1768,7 +1923,6 @@ async function init(){
     return;
   }
 
-  // اعرض شاشة الـ login
   populateLoginSelect();
   const ls = document.getElementById('login-screen');
   ls.classList.remove('hidden');
@@ -1780,8 +1934,3 @@ init();
 </script>
 </body>
 </html>
-HTMLEOF
-echo "Done! File size: $(wc -c < /home/claude/egygulf-crm.html) bytes"
-Output
-
-Command argument is 126_677 bytes, exceeding the 100_000-byte per-argument limit. For large content, pipe via stdin or use a file-write API instead of embedding the content inline in the command. Argument preview: 'cat > /home/claude/egygulf-crm.html << \'HTMLEOF\'\n<!DOCTYPE html>\n<html lang="ar" dir="ltr">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>'

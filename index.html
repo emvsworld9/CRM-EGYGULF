@@ -829,9 +829,20 @@ function toggleSort() { sortNewest = !sortNewest; document.getElementById('sort-
 
 // ═══ GS API ═══
 async function gsGet(action, extra = '') {
-  const url = `${GS_URL}?action=${action}${extra}`;
-  const r = await fetch(url);
-  return r.json();
+  return new Promise((resolve, reject) => {
+    const cbName = 'cb_' + Date.now();
+    const url = `${GS_URL}?action=${action}${extra}&callback=${cbName}`;
+    window[cbName] = (data) => {
+      delete window[cbName];
+      document.getElementById('jsonp-script')?.remove();
+      resolve(data);
+    };
+    const s = document.createElement('script');
+    s.id = 'jsonp-script';
+    s.src = url;
+    s.onerror = () => reject(new Error('JSONP failed'));
+    document.body.appendChild(s);
+  });
 }
 async function gsPost(body) {
   await fetch(GS_URL, {

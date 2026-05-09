@@ -1727,83 +1727,81 @@ function erPrint() {
   const periodLabel = erPeriodLabel();
   const today = new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
 
-  const printRoot = document.getElementById('print-root');
-  printRoot.innerHTML = `
-    <div style="font-family:Arial,sans-serif;padding:32px;background:#fff;color:#000;min-height:100vh">
-      <!-- Header -->
-      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #f5a623;padding-bottom:16px;margin-bottom:24px">
-        <div>
-          <div style="font-size:22px;font-weight:900;color:#0a0f2e">EgyGulf Foods</div>
-          <div style="font-size:11px;color:#888;margin-top:2px">CRM & Sales Intelligence</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:15px;font-weight:800;color:#f5a623">تقرير الموظف</div>
-          <div style="font-size:11px;color:#888;margin-top:3px">طُبع: ${today}</div>
-        </div>
+  const kpiHTML = [
+    {label: emp.role==='social'?'Leads أدخلهم':'Leads معاه', val: totalLeads, color:'#3d8eff'},
+    {label:'Contacted', val: contacted, color:'#ffb020'},
+    {label:'Interested', val: interested.length, color:'#00e5a0'},
+    {label:'نسبة الاهتمام', val: (totalLeads?Math.round(interested.length/totalLeads*100):0)+'%', color:'#9d78ff'},
+  ].map(k=>`<div style="border:2px solid ${k.color}40;border-radius:12px;padding:16px;text-align:center;background:${k.color}12">
+    <div style="font-size:34px;font-weight:900;color:${k.color};font-family:Arial,sans-serif">${k.val}</div>
+    <div style="font-size:10px;color:#555;margin-top:5px;font-weight:700;letter-spacing:.03em">${k.label}</div>
+  </div>`).join('');
+
+  const tableHTML = interested.length
+    ? `<div style="font-size:14px;font-weight:800;color:#0a0f2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5a62350">🔥 عملاء Interested (${interested.length})</div>
+       <table style="width:100%;border-collapse:collapse;font-size:12px">
+         <thead><tr style="background:#f5a62320">
+           <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">#</th>
+           <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">اسم العميل</th>
+           <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">الشركة</th>
+           <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">Status</th>
+           <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">ملاحظات</th>
+         </tr></thead>
+         <tbody>${interested.map((l,i)=>`
+           <tr style="background:${i%2===0?'#fff':'#f9fafb'}">
+             <td style="padding:9px 10px;border:1px solid #ddd;color:#aaa">${i+1}</td>
+             <td style="padding:9px 10px;border:1px solid #ddd;font-weight:700;color:#111">${l.name}</td>
+             <td style="padding:9px 10px;border:1px solid #ddd;color:#555">${l.company||'—'}</td>
+             <td style="padding:9px 10px;border:1px solid #ddd"><span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span></td>
+             <td style="padding:9px 10px;border:1px solid #ddd;color:#555">${l.notes||'—'}</td>
+           </tr>`).join('')}
+         </tbody>
+       </table>`
+    : `<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;border:1px dashed #ddd;border-radius:8px">لا يوجد عملاء Interested في هذه الفترة</div>`;
+
+  const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+    <meta charset="UTF-8">
+    <title>تقرير — ${emp.name}</title>
+    <style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:Arial,sans-serif;background:#fff;color:#000;padding:32px;direction:rtl}
+      @media print{body{padding:20px}}
+    </style>
+  </head><body>
+    <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #f5a623;padding-bottom:16px;margin-bottom:24px">
+      <div>
+        <div style="font-size:22px;font-weight:900;color:#0a0f2e">EgyGulf Foods</div>
+        <div style="font-size:11px;color:#888;margin-top:3px">CRM & Sales Intelligence</div>
       </div>
-
-      <!-- Emp info -->
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
-        <div style="width:50px;height:50px;border-radius:12px;background:${emp.color};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff">${empInitials(emp.name)}</div>
-        <div>
-          <div style="font-size:20px;font-weight:900;color:#0a0f2e">${emp.name}</div>
-          <div style="font-size:12px;color:#666;margin-top:2px">${emp.role === 'sales' ? 'Sales Rep' : 'Social Media'} &nbsp;·&nbsp; ${periodLabel}</div>
-        </div>
-      </div>
-
-      <!-- KPIs -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">
-        ${[
-          {label: emp.role==='social'?'Leads أدخلهم':'Leads معاه', val: totalLeads, color:'#3d8eff'},
-          {label:'Contacted', val: contacted, color:'#ffb020'},
-          {label:'Interested', val: interested.length, color:'#00e5a0'},
-          {label:'نسبة الاهتمام', val: (totalLeads?Math.round(interested.length/totalLeads*100):0)+'%', color:'#9d78ff'},
-        ].map(k=>`
-          <div style="border:2px solid ${k.color}30;border-radius:12px;padding:14px;text-align:center;background:${k.color}0a">
-            <div style="font-size:30px;font-weight:900;color:${k.color}">${k.val}</div>
-            <div style="font-size:10px;color:#666;margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">${k.label}</div>
-          </div>`).join('')}
-      </div>
-
-      <!-- Interested table -->
-      ${interested.length ? `
-        <div style="font-size:14px;font-weight:800;color:#0a0f2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5a62340">
-          🔥 عملاء Interested (${interested.length})
-        </div>
-        <table style="width:100%;border-collapse:collapse;font-size:12px">
-          <thead>
-            <tr style="background:#f5a62318">
-              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">#</th>
-              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">اسم العميل</th>
-              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">الشركة</th>
-              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">Status</th>
-              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">ملاحظات</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${interested.map((l,i)=>`
-              <tr style="background:${i%2===0?'#fff':'#f9fafb'}">
-                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#9ca3af;font-size:11px">${i+1}</td>
-                <td style="padding:9px 10px;border:1px solid #e5e7eb;font-weight:700;color:#111827">${l.name}</td>
-                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#6b7280">${l.company||'—'}</td>
-                <td style="padding:9px 10px;border:1px solid #e5e7eb">
-                  <span style="background:#00e5a015;color:#059669;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span>
-                </td>
-                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#6b7280;font-size:11px">${l.notes||'—'}</td>
-              </tr>`).join('')}
-          </tbody>
-        </table>
-      ` : '<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;border:1px dashed #e5e7eb;border-radius:8px">لا يوجد عملاء Interested في هذه الفترة</div>'}
-
-      <!-- Footer -->
-      <div style="margin-top:40px;padding-top:14px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af">
-        <span>EgyGulf Foods CRM — تقرير الموظف</span>
-        <span>${periodLabel}</span>
+      <div style="text-align:left">
+        <div style="font-size:15px;font-weight:800;color:#f5a623">تقرير الموظف</div>
+        <div style="font-size:11px;color:#888;margin-top:3px">طُبع: ${today}</div>
       </div>
     </div>
-  `;
 
-  window.print();
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+      <div style="width:52px;height:52px;border-radius:12px;background:${emp.color};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0">${empInitials(emp.name)}</div>
+      <div>
+        <div style="font-size:20px;font-weight:900;color:#0a0f2e">${emp.name}</div>
+        <div style="font-size:12px;color:#666;margin-top:3px">${emp.role==='sales'?'Sales Rep':'Social Media'} · ${periodLabel}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">${kpiHTML}</div>
+
+    ${tableHTML}
+
+    <div style="margin-top:40px;padding-top:14px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:10px;color:#aaa">
+      <span>EgyGulf Foods CRM</span>
+      <span>${periodLabel}</span>
+    </div>
+    <script>window.onload=function(){window.print()}<\/script>
+  </body></html>`;
+
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
 }
 
 

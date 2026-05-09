@@ -384,49 +384,40 @@ body:not(.is-admin) .admin-only-card{display:none!important}
   .grid3{grid-template-columns:1fr}
 }
 
-/* ═══ WEEKLY REPORT STYLES ═══ */
-.wr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.wr-emp-selector{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.wr-week-nav{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:6px 12px}
-.wr-week-nav button{background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px;padding:0 4px;line-height:1}
-.wr-week-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text);white-space:nowrap}
-.wr-form{background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius-xl);padding:20px;margin-bottom:16px}
-.wr-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.wr-kpi-input{background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:12px;padding:14px 12px;text-align:center;transition:border-color .2s}
-.wr-kpi-input:focus-within{border-color:rgba(245,166,35,.4)}
-.wr-kpi-input label{display:block;font-size:9px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-family:'Syne',sans-serif}
-.wr-kpi-input input{width:100%;background:none;border:none;font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--gold);text-align:center;outline:none;padding:0}
-.wr-kpi-input input::placeholder{color:var(--text3);font-size:22px}
-.wr-note-area{width:100%;min-height:90px;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:10px;padding:12px;font-size:13px;font-family:inherit;color:var(--text);outline:none;resize:vertical;transition:border-color .2s}
-.wr-note-area:focus{border-color:rgba(245,166,35,.4)}
-.wr-interested-list{margin-top:12px}
-.wr-interested-item{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 12px;background:rgba(0,229,160,.05);border:1px solid rgba(0,229,160,.15);border-radius:10px;margin-bottom:8px}
-.wr-interested-item .wi-info{flex:1}
-.wr-interested-item .wi-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
-.wr-interested-item .wi-company{font-size:11px;color:var(--text3);margin-bottom:4px}
-.wr-interested-item .wi-note{font-size:11px;color:var(--amber);background:rgba(255,176,32,.08);border-radius:6px;padding:4px 8px;display:inline-block}
-.wr-interested-item .wi-status{flex-shrink:0}
-.wr-save-bar{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
-.wr-report-card{background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius-xl);padding:16px;margin-bottom:12px}
-.wr-report-card .rc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.wr-report-card .rc-emp{display:flex;align-items:center;gap:10px}
-.wr-report-card .rc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-.wr-report-card .rc-stat{text-align:center;background:rgba(255,255,255,.04);border-radius:8px;padding:8px}
-.wr-report-card .rc-stat-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text)}
-.wr-report-card .rc-stat-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:3px}
-.wr-report-card .rc-note{font-size:12px;color:var(--text2);background:rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-bottom:10px;white-space:pre-wrap;line-height:1.6}
-.wr-submitted-badge{background:var(--green-bg);color:var(--green);border:1px solid rgba(0,229,160,.25);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif}
-.wr-pending-badge{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(255,176,32,.25);border-radius:8px;padding:4px 10px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif}
-@media(max-width:600px){.wr-kpi-row{grid-template-columns:1fr 1fr}.wr-kpi-input input{font-size:22px}}
+/* ═══ EMPLOYEE REPORT STYLES ═══ */
+.er-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.er-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.er-select{padding:8px 12px;background:rgba(255,255,255,.05);border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none}
+.er-select:focus{border-color:rgba(245,166,35,.4)}
+.er-select option{background:#0a0f2e}
+.er-period-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.er-chip{padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text3);transition:all .2s}
+.er-chip.active{background:linear-gradient(135deg,rgba(245,166,35,.18),rgba(245,166,35,.06));color:var(--gold);border-color:rgba(245,166,35,.3)}
+.er-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.er-kpi{background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:14px 12px;text-align:center;position:relative;overflow:hidden}
+.er-kpi-bar{position:absolute;top:0;left:0;right:0;height:2px}
+.er-kpi-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:4px}
+.er-kpi-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-family:'Syne',sans-serif}
+.er-section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.er-interested-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.er-int-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;background:linear-gradient(135deg,rgba(0,229,160,.06),rgba(0,229,160,.02));border:1px solid rgba(0,229,160,.18);border-radius:12px}
+.er-int-num{width:22px;height:22px;border-radius:50%;background:rgba(0,229,160,.15);color:var(--green);font-family:'Syne',sans-serif;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.er-int-body{flex:1;min-width:0}
+.er-int-name{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px}
+.er-int-company{font-size:11px;color:var(--text3);margin-bottom:5px}
+.er-int-note{font-size:11px;color:var(--amber);background:rgba(255,176,32,.1);border-radius:6px;padding:4px 9px;display:inline-block;line-height:1.4}
+.er-int-status{flex-shrink:0}
+.er-note-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.65;margin-bottom:16px;min-height:40px}
+.er-empty{text-align:center;padding:30px;color:var(--text3);font-size:13px;background:rgba(255,255,255,.02);border-radius:12px;border:1px dashed var(--border)}
+@media(max-width:600px){.er-kpi-grid{grid-template-columns:1fr 1fr}.er-kpi-val{font-size:22px}}
 
-/* ═══ PRINT STYLES ═══ */
+/* ═══ PRINT ═══ */
 @media print {
-  body *{visibility:hidden}
-  #print-report-area,#print-report-area *{visibility:visible}
-  #print-report-area{position:fixed;inset:0;background:#fff;color:#000;padding:28px;font-family:Arial,sans-serif;overflow:auto}
-  .print-hide{display:none!important}
+  html,body{height:auto;overflow:visible}
+  body > *:not(#print-root){display:none!important}
+  #print-root{display:block!important;position:static;width:100%;background:#fff;color:#000}
 }
-#print-report-area{display:none}
+#print-root{display:none}
 </style>
 </head>
 <body>
@@ -681,74 +672,35 @@ body:not(.is-admin) .admin-only-card{display:none!important}
         </div>
         <div class="card"><div class="card-header"><div class="card-title">Status Distribution</div></div><div id="status-dist-chart"></div></div>
       </div>
-      <!-- WEEKLY REPORT -->
+      <!-- EMPLOYEE REPORT -->
       <div class="page" id="page-weeklyreport">
-        <div class="wr-header">
-          <div>
-            <div class="section-title" style="margin-bottom:2px">📋 Weekly Report</div>
-            <div style="font-size:11px;color:var(--text3)" id="wr-subtitle">تقرير أسبوعي للموظف</div>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-            <div class="wr-week-nav">
-              <button onclick="wrChangeWeek(-1)">←</button>
-              <span class="wr-week-label" id="wr-week-label">—</span>
-              <button onclick="wrChangeWeek(1)">→</button>
-            </div>
-            <button class="btn btn-outline btn-sm print-hide" onclick="printWeeklyReport()">🖨️ Print</button>
-            <button class="btn btn-gold btn-sm print-hide admin-only" id="wr-admin-view-btn" onclick="toggleWrAdminView()">👁 Admin View</button>
+
+        <!-- top bar: title + emp selector + print -->
+        <div class="er-topbar">
+          <div class="section-title" style="margin-bottom:0">📋 Employee Report</div>
+          <div class="er-controls">
+            <select class="er-select" id="er-emp-select" onchange="erRender()">
+              <option value="">-- اختر موظف --</option>
+            </select>
+            <button class="btn btn-gold btn-sm" onclick="erPrint()">🖨️ طباعة</button>
           </div>
         </div>
 
-        <!-- Employee form (non-admin) -->
-        <div id="wr-emp-section">
-          <div class="wr-form">
-            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">📊 أرقام الأسبوع</div>
-            <div class="wr-kpi-row">
-              <div class="wr-kpi-input">
-                <label>📥 Leads جدد</label>
-                <input id="wr-new-leads" type="number" inputmode="numeric" placeholder="0" min="0">
-              </div>
-              <div class="wr-kpi-input">
-                <label>📞 تم التواصل</label>
-                <input id="wr-contacted" type="number" inputmode="numeric" placeholder="0" min="0">
-              </div>
-              <div class="wr-kpi-input">
-                <label>🔥 Interested</label>
-                <input id="wr-interested" type="number" inputmode="numeric" placeholder="0" min="0">
-              </div>
-              <div class="wr-kpi-input">
-                <label>✅ Contacted</label>
-                <input id="wr-contacted2" type="number" inputmode="numeric" placeholder="0" min="0">
-              </div>
-            </div>
-
-            <div style="margin-bottom:14px">
-              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">📝 ملاحظات الأسبوع</div>
-              <textarea class="wr-note-area" id="wr-notes" placeholder="اكتب أي ملاحظات أو تفاصيل عن الأسبوع... عملاء مهمين، تحديات، اقتراحات..."></textarea>
-            </div>
-
-            <div style="margin-bottom:8px">
-              <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">🔥 عملاء Interested هذا الأسبوع</div>
-              <div id="wr-interested-list" class="wr-interested-list">
-                <div style="font-size:11px;color:var(--text3);text-align:center;padding:12px">جاري التحميل...</div>
-              </div>
-            </div>
-
-            <div class="wr-save-bar">
-              <button class="btn btn-outline btn-sm" onclick="wrLoadReport()">↺ تحديث</button>
-              <button class="btn btn-gold" onclick="wrSaveReport()">💾 حفظ الريبورت</button>
-            </div>
-          </div>
+        <!-- period filter -->
+        <div class="er-period-chips">
+          <div class="er-chip active" onclick="erSetPeriod('today',this)">📅 اليوم</div>
+          <div class="er-chip" onclick="erSetPeriod('week',this)">📆 الأسبوع</div>
+          <div class="er-chip" onclick="erSetPeriod('month',this)">🗓 الشهر</div>
+          <div class="er-chip" onclick="erSetPeriod('all',this)">📊 الكل</div>
         </div>
 
-        <!-- Admin view of all reports -->
-        <div id="wr-admin-section" style="display:none">
-          <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text);margin-bottom:12px">تقارير جميع الموظفين لهذا الأسبوع</div>
-          <div id="wr-admin-reports-list"></div>
+        <!-- report body -->
+        <div id="er-body">
+          <div class="er-empty">اختر موظف من القائمة لعرض التقرير</div>
         </div>
 
-        <!-- Print area (hidden, shown on print) -->
-        <div id="print-report-area"></div>
+        <!-- hidden print container -->
+        <div id="print-root"></div>
       </div>
 
       <!-- INVOICES -->
@@ -1617,331 +1569,243 @@ function toggleSidebar() { document.getElementById('sidebar').classList.toggle('
 function exportCSV() { const leads = STATE.leads; const headers = ['ID', 'Name', 'Company', 'Phone', 'WhatsApp', 'Email', 'Country', 'City', 'Product', 'Source', 'Sales Rep', 'Social Rep', 'Status', 'Priority', 'Deal Value', 'Sample', 'Visit', 'Notes', 'Date Added', 'Last Updated']; const rows = leads.map(l => { const visit = getLeadVisit(l.id); return [l.id, l.name, l.company, l.phone, l.whatsapp, l.email, l.country, l.city, l.product, l.source, empName(l.salesEmp), empName(l.socialEmp), l.status, l.priority, l.deal, l.samples === 'yes' ? 'Yes' : 'No', visit ? (visit.visited === 'yes' ? 'Yes' : 'No') : 'No', l.notes, l.added, l.updated || l.added].map(v => '"' + (v || '').toString().replace(/"/g, '""') + '"').join(','); }); const csv = [headers.join(','), ...rows].join('\n'); const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'EgyGulf_Leads_' + new Date().toISOString().slice(0, 10) + '.csv'; a.click(); toast('CSV exported', 'success'); }
 function backupData() { const data = { leads: STATE.leads, employees: STATE.employees, pairs: STATE.pairs, invoices: STATE.invoices, visits: STATE.visits, comments: STATE.comments, exportedAt: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'EgyGulf_Backup_' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); toast('Backup downloaded', 'success'); }
 
-// ═══ WEEKLY REPORT ═══
-let wrWeekOffset = 0; // 0 = current week, -1 = last week, etc.
-let wrAdminViewMode = false;
+// ═══ EMPLOYEE REPORT ═══
+let erPeriod = 'week';
 
-function wrGetWeekRange(offset) {
-  const now = new Date();
-  const day = now.getDay(); // 0=Sun
-  const startOfWeek = new Date(now);
-  startOfWeek.setDate(now.getDate() - day + (day === 0 ? -6 : 1) + offset * 7); // Mon
-  startOfWeek.setHours(0,0,0,0);
-  const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6);
-  return { start: startOfWeek, end: endOfWeek };
+function erSetPeriod(p, el) {
+  erPeriod = p;
+  document.querySelectorAll('.er-chip').forEach(c => c.classList.remove('active'));
+  if (el) el.classList.add('active');
+  erRender();
 }
 
-function wrWeekKey(offset) {
-  const { start } = wrGetWeekRange(offset);
-  return `wr_${start.toISOString().slice(0,10)}`;
-}
-
-function wrFormatRange(offset) {
-  const { start, end } = wrGetWeekRange(offset);
-  const fmt2 = d => `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
-  const labels = ['هذا الأسبوع','الأسبوع الماضي'];
-  if (offset === 0) return `${labels[0]} (${fmt2(start)} – ${fmt2(end)})`;
-  if (offset === -1) return `${labels[1]} (${fmt2(start)} – ${fmt2(end)})`;
-  return `${fmt2(start)} – ${fmt2(end)}`;
-}
-
-function wrChangeWeek(dir) {
-  wrWeekOffset += dir;
-  if (wrWeekOffset > 0) wrWeekOffset = 0;
-  initWeeklyReport();
-}
-
-function toggleWrAdminView() {
-  wrAdminViewMode = !wrAdminViewMode;
-  const btn = document.getElementById('wr-admin-view-btn');
-  if (btn) btn.textContent = wrAdminViewMode ? '📝 My Report' : '👁 Admin View';
-  document.getElementById('wr-emp-section').style.display = wrAdminViewMode ? 'none' : '';
-  document.getElementById('wr-admin-section').style.display = wrAdminViewMode ? '' : 'none';
-  if (wrAdminViewMode) renderWrAdminView();
+function erPopulateSelect() {
+  const sel = document.getElementById('er-emp-select');
+  if (!sel) return;
+  const emps = STATE.employees.filter(e => e.role === 'sales' || e.role === 'social');
+  sel.innerHTML = '<option value="">-- اختر موظف --</option>' +
+    emps.map(e => `<option value="${e.id}">[${e.role === 'sales' ? 'Sales' : 'Social'}] ${e.name}</option>`).join('');
+  // If logged-in user is an employee (not admin), auto-select them
+  if (!isAdmin() && SESSION.empId) {
+    sel.value = SESSION.empId;
+  }
 }
 
 function initWeeklyReport() {
-  const lbl = document.getElementById('wr-week-label');
-  if (lbl) lbl.textContent = wrFormatRange(wrWeekOffset);
-  const sub = document.getElementById('wr-subtitle');
-  if (sub) sub.textContent = wrWeekOffset === 0 ? 'ابعت ريبورت الأسبوع الجاري' : (wrWeekOffset === -1 ? 'ريبورت الأسبوع الماضي' : 'ريبورت أسبوع سابق');
-  // admin view toggle visibility
-  const adminBtn = document.getElementById('wr-admin-view-btn');
-  if (adminBtn) adminBtn.style.display = isAdmin() ? '' : 'none';
-  if (wrAdminViewMode && isAdmin()) { renderWrAdminView(); return; }
-  wrLoadReport();
-  wrRenderInterestedList();
+  erPopulateSelect();
+  erRender();
 }
 
-function wrGetAllReports() {
-  try { return JSON.parse(localStorage.getItem('eg_weekly_reports') || '{}') } catch { return {} }
-}
-function wrSetAllReports(obj) { localStorage.setItem('eg_weekly_reports', JSON.stringify(obj)); }
-
-function wrLoadReport() {
-  const key = wrWeekKey(wrWeekOffset);
-  const empId = SESSION.empId || SESSION.user;
-  const all = wrGetAllReports();
-  const report = (all[key] || {})[empId];
-  if (report) {
-    ['new-leads','contacted','interested','contacted2','notes'].forEach(f => {
-      const el = document.getElementById('wr-' + f);
-      if (el) el.value = report[f] || '';
-    });
-  } else {
-    ['new-leads','contacted','interested','contacted2'].forEach(f => { const el = document.getElementById('wr-' + f); if (el) el.value = ''; });
-    const n = document.getElementById('wr-notes'); if (n) n.value = '';
-  }
-}
-
-function wrSaveReport() {
-  const empId = SESSION.empId || SESSION.user;
-  const empName2 = SESSION.user;
-  const role = SESSION.role;
-  const key = wrWeekKey(wrWeekOffset);
-  const { start, end } = wrGetWeekRange(wrWeekOffset);
-
-  const report = {
-    empId, empName: empName2, role,
-    weekKey: key,
-    weekLabel: wrFormatRange(wrWeekOffset),
-    weekStart: start.toISOString(),
-    weekEnd: end.toISOString(),
-    'new-leads': document.getElementById('wr-new-leads')?.value || '0',
-    contacted: document.getElementById('wr-contacted')?.value || '0',
-    interested: document.getElementById('wr-interested')?.value || '0',
-    contacted2: document.getElementById('wr-contacted2')?.value || '0',
-    notes: document.getElementById('wr-notes')?.value || '',
-    savedAt: new Date().toISOString(),
-    interestedLeads: wrGetMyInterestedThisWeek().map(l => ({ id: l.id, name: l.name, company: l.company || '', notes: l.notes || '', status: l.status }))
-  };
-
-  const all = wrGetAllReports();
-  if (!all[key]) all[key] = {};
-  all[key][empId] = report;
-  wrSetAllReports(all);
-  toast('✅ تم حفظ الريبورت', 'success');
-  addNotification('success', 'Weekly Report Saved', `${empName2} — ${wrFormatRange(wrWeekOffset)}`);
-}
-
-function wrGetMyInterestedThisWeek() {
-  const empId = SESSION.empId || SESSION.user;
-  const role = SESSION.role;
-  const { start, end } = wrGetWeekRange(wrWeekOffset);
+function erGetPeriodLeads(empId, role) {
+  const now = new Date();
   return STATE.leads.filter(l => {
-    const isMyLead = role === 'sales' ? l.salesEmp === empId : l.socialEmp === empId;
-    if (!isMyLead) return false;
-    if (!['Interested','Follow-up','Invoice','Closed Won'].includes(l.status)) return false;
+    // match employee
+    const mine = role === 'sales' ? l.salesEmp === empId : l.socialEmp === empId;
+    if (!mine) return false;
+    // match period — use updated date (or added if no updated)
     const d = new Date(l.updated || l.added);
-    return d >= start && d <= end;
+    if (erPeriod === 'today') return d.toDateString() === now.toDateString();
+    if (erPeriod === 'week') {
+      const s = new Date(now);
+      const day = s.getDay();
+      s.setDate(s.getDate() - (day === 0 ? 6 : day - 1));
+      s.setHours(0,0,0,0);
+      return d >= s;
+    }
+    if (erPeriod === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    return true;
   });
 }
 
-function wrRenderInterestedList() {
-  const el = document.getElementById('wr-interested-list');
-  if (!el) return;
-  const leads = wrGetMyInterestedThisWeek();
-  if (!leads.length) {
-    el.innerHTML = `<div style="font-size:11px;color:var(--text3);text-align:center;padding:14px;background:rgba(255,255,255,.03);border-radius:8px;border:1px dashed var(--border)">لا يوجد عملاء Interested هذا الأسبوع</div>`;
+function erPeriodLabel() {
+  const now = new Date();
+  const d = n => n.toString().padStart(2,'0');
+  const fmt = x => `${d(x.getDate())}/${d(x.getMonth()+1)}/${x.getFullYear()}`;
+  if (erPeriod === 'today') return `اليوم — ${fmt(now)}`;
+  if (erPeriod === 'week') {
+    const s = new Date(now);
+    const day = s.getDay();
+    s.setDate(s.getDate() - (day === 0 ? 6 : day - 1));
+    s.setHours(0,0,0,0);
+    const e = new Date(s); e.setDate(s.getDate() + 6);
+    return `الأسبوع — ${fmt(s)} إلى ${fmt(e)}`;
+  }
+  if (erPeriod === 'month') {
+    const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    return `${months[now.getMonth()]} ${now.getFullYear()}`;
+  }
+  return 'كل الوقت';
+}
+
+function erRender() {
+  const body = document.getElementById('er-body');
+  if (!body) return;
+  const sel = document.getElementById('er-emp-select');
+  const empId = sel ? sel.value : '';
+  if (!empId) {
+    body.innerHTML = '<div class="er-empty">اختر موظف من القائمة لعرض التقرير</div>';
     return;
   }
-  el.innerHTML = leads.map(l => `
-    <div class="wr-interested-item">
-      <div class="wi-info">
-        <div class="wi-name">${l.name}</div>
-        ${l.company ? `<div class="wi-company">🏢 ${l.company}</div>` : ''}
-        ${l.notes ? `<div class="wi-note">📝 ${l.notes}</div>` : '<div style="font-size:10px;color:var(--text3)">لا يوجد ملاحظات</div>'}
+  const emp = STATE.employees.find(e => e.id === empId);
+  if (!emp) { body.innerHTML = '<div class="er-empty">موظف غير موجود</div>'; return; }
+
+  const leads = erGetPeriodLeads(empId, emp.role);
+  const totalLeads = leads.length;
+  const contacted = leads.filter(l => l.status !== 'New').length;
+  const interested = leads.filter(l => ['Interested','Follow-up','Invoice','Closed Won'].includes(l.status));
+  const interestedCount = interested.length;
+  // For social: leads generated = all leads; for sales: assigned leads
+  const periodLabel = erPeriodLabel();
+
+  // Build interested leads list
+  const intHTML = interested.length
+    ? interested.map((l,i) => `
+      <div class="er-int-item">
+        <div class="er-int-num">${i+1}</div>
+        <div class="er-int-body">
+          <div class="er-int-name">${l.name}</div>
+          ${l.company ? `<div class="er-int-company">🏢 ${l.company}</div>` : ''}
+          ${l.notes ? `<div class="er-int-note">📝 ${l.notes}</div>` : '<div style="font-size:10px;color:var(--text3);margin-top:3px">لا يوجد ملاحظات</div>'}
+        </div>
+        <div class="er-int-status"><span class="tag ${STATUS_TAG[l.status]||'tag-new'}">${l.status}</span></div>
+      </div>`).join('')
+    : `<div class="er-empty">لا يوجد عملاء Interested في هذه الفترة</div>`;
+
+  body.innerHTML = `
+    <!-- emp header -->
+    <div class="card" style="margin-bottom:14px;padding:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:12px;background:${emp.color};display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(emp.name)}</div>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text)">${emp.name}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${emp.role === 'sales' ? '💼 Sales Rep' : '📱 Social Media'} · ${periodLabel}</div>
+        </div>
       </div>
-      <div class="wi-status"><span class="tag ${STATUS_TAG[l.status] || 'tag-new'}">${l.status}</span></div>
     </div>
-  `).join('');
-}
 
-function renderWrAdminView() {
-  const el = document.getElementById('wr-admin-reports-list');
-  if (!el) return;
-  const key = wrWeekKey(wrWeekOffset);
-  const all = wrGetAllReports();
-  const weekReports = all[key] || {};
-  const emps = STATE.employees.filter(e => e.role === 'sales' || e.role === 'social');
-
-  if (!emps.length) { el.innerHTML = `<div class="table-empty">لا يوجد موظفين</div>`; return; }
-
-  el.innerHTML = emps.map(e => {
-    const report = weekReports[e.id] || weekReports[e.name];
-    const submitted = !!report;
-    const savedAt = submitted ? new Date(report.savedAt).toLocaleString('ar-EG') : null;
-    const intLeads = submitted && report.interestedLeads ? report.interestedLeads : [];
-
-    return `<div class="wr-report-card">
-      <div class="rc-head">
-        <div class="rc-emp">
-          <div style="width:34px;height:34px;border-radius:10px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff">${empInitials(e.name)}</div>
-          <div>
-            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text)">${e.name}</div>
-            <div style="font-size:10px;color:var(--text3)">${e.role === 'sales' ? '💼 Sales' : '📱 Social Media'}${submitted ? ' · ' + savedAt : ''}</div>
-          </div>
-        </div>
-        ${submitted ? `<span class="wr-submitted-badge">✅ تم الإرسال</span>` : `<span class="wr-pending-badge">⏳ لم يُرسل</span>`}
+    <!-- KPIs -->
+    <div class="er-kpi-grid" style="margin-bottom:16px">
+      <div class="er-kpi">
+        <div class="er-kpi-bar" style="background:var(--blue)"></div>
+        <div class="er-kpi-val" style="color:var(--blue)">${totalLeads}</div>
+        <div class="er-kpi-lbl">${emp.role === 'social' ? 'Leads أدخلهم' : 'Leads معاه'}</div>
       </div>
-      ${submitted ? `
-        <div class="rc-stats">
-          <div class="rc-stat"><div class="rc-stat-val" style="color:var(--blue)">${report['new-leads'] || 0}</div><div class="rc-stat-label">Leads جدد</div></div>
-          <div class="rc-stat"><div class="rc-stat-val" style="color:var(--amber)">${report.contacted || 0}</div><div class="rc-stat-label">تواصل</div></div>
-          <div class="rc-stat"><div class="rc-stat-val" style="color:var(--green)">${report.interested || 0}</div><div class="rc-stat-label">Interested</div></div>
-          <div class="rc-stat"><div class="rc-stat-val" style="color:var(--purple)">${report.contacted2 || 0}</div><div class="rc-stat-label">Contacted</div></div>
-        </div>
-        ${report.notes ? `<div class="rc-note">${report.notes}</div>` : ''}
-        ${intLeads.length ? `
-          <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">🔥 عملاء Interested (${intLeads.length})</div>
-          ${intLeads.map(l => `<div class="wr-interested-item" style="margin-bottom:6px">
-            <div class="wi-info">
-              <div class="wi-name">${l.name}</div>
-              ${l.company ? `<div class="wi-company">🏢 ${l.company}</div>` : ''}
-              ${l.notes ? `<div class="wi-note">📝 ${l.notes}</div>` : ''}
-            </div>
-            <div class="wi-status"><span class="tag ${STATUS_TAG[l.status] || 'tag-new'}">${l.status}</span></div>
-          </div>`).join('')}
-        ` : ''}
-        <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:10px" onclick="printSingleReport('${e.id}','${key}')">🖨️ طباعة تقرير ${e.name}</button>
-      ` : `<div style="font-size:12px;color:var(--text3);text-align:center;padding:20px">لم يرسل الموظف الريبورت بعد</div>`}
-    </div>`;
-  }).join('');
+      <div class="er-kpi">
+        <div class="er-kpi-bar" style="background:var(--amber)"></div>
+        <div class="er-kpi-val" style="color:var(--amber)">${contacted}</div>
+        <div class="er-kpi-lbl">Contacted</div>
+      </div>
+      <div class="er-kpi">
+        <div class="er-kpi-bar" style="background:var(--green)"></div>
+        <div class="er-kpi-val" style="color:var(--green)">${interestedCount}</div>
+        <div class="er-kpi-lbl">Interested</div>
+      </div>
+      <div class="er-kpi">
+        <div class="er-kpi-bar" style="background:var(--purple)"></div>
+        <div class="er-kpi-val" style="color:var(--purple)">${totalLeads ? Math.round(interestedCount/totalLeads*100) : 0}%</div>
+        <div class="er-kpi-lbl">نسبة الاهتمام</div>
+      </div>
+    </div>
+
+    <!-- Interested leads -->
+    <div class="er-section-title">🔥 عملاء Interested <span style="background:var(--green-bg);color:var(--green);border-radius:20px;padding:2px 10px;font-size:10px">${interestedCount}</span></div>
+    <div class="er-interested-list">${intHTML}</div>
+  `;
 }
 
-function printWeeklyReport() {
-  const empId = SESSION.empId || SESSION.user;
-  const key = wrWeekKey(wrWeekOffset);
-  const all = wrGetAllReports();
-  const report = (all[key] || {})[empId];
-  const weekLabel = wrFormatRange(wrWeekOffset);
+function erPrint() {
+  const sel = document.getElementById('er-emp-select');
+  const empId = sel ? sel.value : '';
+  if (!empId) { toast('اختر موظف أولاً', 'error'); return; }
+  const emp = STATE.employees.find(e => e.id === empId);
+  if (!emp) return;
 
-  let intLeads = [];
-  if (report && report.interestedLeads) {
-    intLeads = report.interestedLeads;
-  } else {
-    intLeads = wrGetMyInterestedThisWeek().map(l => ({ name: l.name, company: l.company || '', notes: l.notes || '', status: l.status }));
-  }
+  const leads = erGetPeriodLeads(empId, emp.role);
+  const totalLeads = leads.length;
+  const contacted = leads.filter(l => l.status !== 'New').length;
+  const interested = leads.filter(l => ['Interested','Follow-up','Invoice','Closed Won'].includes(l.status));
+  const periodLabel = erPeriodLabel();
+  const today = new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
 
-  const newLeads  = report?.['new-leads'] || document.getElementById('wr-new-leads')?.value || '0';
-  const contacted = report?.contacted || document.getElementById('wr-contacted')?.value || '0';
-  const interested = report?.interested || document.getElementById('wr-interested')?.value || '0';
-  const contacted2 = report?.contacted2 || document.getElementById('wr-contacted2')?.value || '0';
-  const notes = report?.notes || document.getElementById('wr-notes')?.value || '';
-
-  buildPrintArea({
-    empName: SESSION.user,
-    role: SESSION.role,
-    weekLabel,
-    newLeads, contacted, interested, contacted2,
-    notes, intLeads
-  });
-  window.print();
-}
-
-function printSingleReport(empId, weekKey) {
-  const all = wrGetAllReports();
-  const report = (all[weekKey] || {})[empId];
-  if (!report) { toast('لا يوجد ريبورت', 'error'); return; }
-  buildPrintArea({
-    empName: report.empName,
-    role: report.role,
-    weekLabel: report.weekLabel,
-    newLeads: report['new-leads'] || 0,
-    contacted: report.contacted || 0,
-    interested: report.interested || 0,
-    contacted2: report.contacted2 || 0,
-    notes: report.notes || '',
-    intLeads: report.interestedLeads || []
-  });
-  window.print();
-}
-
-function buildPrintArea({ empName, role, weekLabel, newLeads, contacted, interested, contacted2, notes, intLeads }) {
-  const area = document.getElementById('print-report-area');
-  const roleLabel = role === 'sales' ? 'Sales Rep' : role === 'social' ? 'Social Media' : role;
-  const today = new Date().toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
-
-  area.innerHTML = `
-    <div style="border-bottom:3px solid #f5a623;padding-bottom:16px;margin-bottom:24px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
+  const printRoot = document.getElementById('print-root');
+  printRoot.innerHTML = `
+    <div style="font-family:Arial,sans-serif;padding:32px;background:#fff;color:#000;min-height:100vh">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #f5a623;padding-bottom:16px;margin-bottom:24px">
         <div>
-          <div style="font-size:22px;font-weight:900;color:#0a0f2e;font-family:Arial">EgyGulf Foods</div>
-          <div style="font-size:12px;color:#666;margin-top:2px">CRM & Sales Intelligence</div>
+          <div style="font-size:22px;font-weight:900;color:#0a0f2e">EgyGulf Foods</div>
+          <div style="font-size:11px;color:#888;margin-top:2px">CRM & Sales Intelligence</div>
         </div>
         <div style="text-align:right">
-          <div style="font-size:14px;font-weight:800;color:#f5a623">تقرير أسبوعي</div>
-          <div style="font-size:11px;color:#888;margin-top:2px">تاريخ الطباعة: ${today}</div>
+          <div style="font-size:15px;font-weight:800;color:#f5a623">تقرير الموظف</div>
+          <div style="font-size:11px;color:#888;margin-top:3px">طُبع: ${today}</div>
         </div>
       </div>
-    </div>
 
-    <div style="display:flex;gap:24px;margin-bottom:24px;align-items:flex-start">
-      <div style="flex:1">
-        <div style="font-size:18px;font-weight:900;color:#0a0f2e">${empName}</div>
-        <div style="font-size:12px;color:#888;margin-top:2px">${roleLabel}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:12px;font-weight:700;color:#444">📅 ${weekLabel}</div>
-      </div>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
-      ${[
-        { label: '📥 Leads جدد', val: newLeads, color: '#3d8eff' },
-        { label: '📞 تم التواصل معهم', val: contacted, color: '#ffb020' },
-        { label: '🔥 Interested', val: interested, color: '#00e5a0' },
-        { label: '✅ Contacted', val: contacted2, color: '#9d78ff' },
-      ].map(k => `
-        <div style="border:2px solid ${k.color}22;border-radius:12px;padding:14px;text-align:center;background:${k.color}08">
-          <div style="font-size:32px;font-weight:900;color:${k.color};font-family:Arial">${k.val}</div>
-          <div style="font-size:10px;color:#666;margin-top:4px;font-weight:600">${k.label}</div>
+      <!-- Emp info -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <div style="width:50px;height:50px;border-radius:12px;background:${emp.color};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff">${empInitials(emp.name)}</div>
+        <div>
+          <div style="font-size:20px;font-weight:900;color:#0a0f2e">${emp.name}</div>
+          <div style="font-size:12px;color:#666;margin-top:2px">${emp.role === 'sales' ? 'Sales Rep' : 'Social Media'} &nbsp;·&nbsp; ${periodLabel}</div>
         </div>
-      `).join('')}
-    </div>
-
-    ${notes ? `
-      <div style="margin-bottom:24px">
-        <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:8px;border-bottom:1px solid #eee;padding-bottom:6px">📝 ملاحظات الأسبوع</div>
-        <div style="font-size:12px;color:#555;line-height:1.7;background:#fafafa;border-radius:8px;padding:12px;border:1px solid #eee;white-space:pre-wrap">${notes}</div>
       </div>
-    ` : ''}
 
-    ${intLeads.length ? `
-      <div>
-        <div style="font-size:13px;font-weight:800;color:#333;margin-bottom:10px;border-bottom:1px solid #eee;padding-bottom:6px">🔥 عملاء Interested هذا الأسبوع (${intLeads.length})</div>
+      <!-- KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">
+        ${[
+          {label: emp.role==='social'?'Leads أدخلهم':'Leads معاه', val: totalLeads, color:'#3d8eff'},
+          {label:'Contacted', val: contacted, color:'#ffb020'},
+          {label:'Interested', val: interested.length, color:'#00e5a0'},
+          {label:'نسبة الاهتمام', val: (totalLeads?Math.round(interested.length/totalLeads*100):0)+'%', color:'#9d78ff'},
+        ].map(k=>`
+          <div style="border:2px solid ${k.color}30;border-radius:12px;padding:14px;text-align:center;background:${k.color}0a">
+            <div style="font-size:30px;font-weight:900;color:${k.color}">${k.val}</div>
+            <div style="font-size:10px;color:#666;margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:.05em">${k.label}</div>
+          </div>`).join('')}
+      </div>
+
+      <!-- Interested table -->
+      ${interested.length ? `
+        <div style="font-size:14px;font-weight:800;color:#0a0f2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5a62340">
+          🔥 عملاء Interested (${interested.length})
+        </div>
         <table style="width:100%;border-collapse:collapse;font-size:12px">
           <thead>
-            <tr style="background:#f5a62315">
-              <th style="padding:8px 10px;text-align:left;border:1px solid #eee;font-weight:800;color:#333">#</th>
-              <th style="padding:8px 10px;text-align:left;border:1px solid #eee;font-weight:800;color:#333">اسم العميل</th>
-              <th style="padding:8px 10px;text-align:left;border:1px solid #eee;font-weight:800;color:#333">الشركة</th>
-              <th style="padding:8px 10px;text-align:left;border:1px solid #eee;font-weight:800;color:#333">Status</th>
-              <th style="padding:8px 10px;text-align:left;border:1px solid #eee;font-weight:800;color:#333">ملاحظات</th>
+            <tr style="background:#f5a62318">
+              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">#</th>
+              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">اسم العميل</th>
+              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">الشركة</th>
+              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">Status</th>
+              <th style="padding:9px 10px;text-align:left;border:1px solid #e5e7eb;font-weight:800;color:#374151;font-size:11px">ملاحظات</th>
             </tr>
           </thead>
           <tbody>
-            ${intLeads.map((l,i) => `
-              <tr style="background:${i%2===0?'#fff':'#fafafa'}">
-                <td style="padding:8px 10px;border:1px solid #eee;color:#888">${i+1}</td>
-                <td style="padding:8px 10px;border:1px solid #eee;font-weight:700;color:#0a0f2e">${l.name}</td>
-                <td style="padding:8px 10px;border:1px solid #eee;color:#555">${l.company || '—'}</td>
-                <td style="padding:8px 10px;border:1px solid #eee"><span style="background:#00e5a015;color:#00a070;padding:2px 8px;border-radius:5px;font-size:10px;font-weight:700">${l.status}</span></td>
-                <td style="padding:8px 10px;border:1px solid #eee;color:#555;font-size:11px">${l.notes || '—'}</td>
-              </tr>
-            `).join('')}
+            ${interested.map((l,i)=>`
+              <tr style="background:${i%2===0?'#fff':'#f9fafb'}">
+                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#9ca3af;font-size:11px">${i+1}</td>
+                <td style="padding:9px 10px;border:1px solid #e5e7eb;font-weight:700;color:#111827">${l.name}</td>
+                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#6b7280">${l.company||'—'}</td>
+                <td style="padding:9px 10px;border:1px solid #e5e7eb">
+                  <span style="background:#00e5a015;color:#059669;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span>
+                </td>
+                <td style="padding:9px 10px;border:1px solid #e5e7eb;color:#6b7280;font-size:11px">${l.notes||'—'}</td>
+              </tr>`).join('')}
           </tbody>
         </table>
-      </div>
-    ` : ''}
+      ` : '<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;border:1px dashed #e5e7eb;border-radius:8px">لا يوجد عملاء Interested في هذه الفترة</div>'}
 
-    <div style="margin-top:40px;padding-top:16px;border-top:1px solid #eee;display:flex;justify-content:space-between;font-size:11px;color:#aaa">
-      <span>EgyGulf Foods CRM — تقرير أسبوعي</span>
-      <span>${weekLabel}</span>
+      <!-- Footer -->
+      <div style="margin-top:40px;padding-top:14px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;font-size:10px;color:#9ca3af">
+        <span>EgyGulf Foods CRM — تقرير الموظف</span>
+        <span>${periodLabel}</span>
+      </div>
     </div>
   `;
+
+  window.print();
 }
+
 
 // ═══ INIT ═══
 async function init() {

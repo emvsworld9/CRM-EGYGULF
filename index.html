@@ -466,7 +466,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="nav-section-label">Leads</div>
       <div class="nav-item" onclick="nav('leads',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="label">Lead Database</span></div>
       <div class="nav-item" onclick="nav('addlead',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg><span class="label">Add Lead</span></div>
-      <div class="nav-item" onclick="nav('duplicates',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="label">Duplicates</span><span class="badge" id="dup-nav-badge" style="display:none">!</span></div>
+      <div class="nav-item admin-only" onclick="nav('duplicates',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="label">Duplicates</span><span class="badge" id="dup-nav-badge" style="display:none">!</span></div>
       <div class="nav-section-label">Teams</div>
       <div class="nav-item" onclick="nav('sales',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="label">Sales Team</span></div>
       <div class="nav-item" onclick="nav('social',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="label">Social Media</span></div>
@@ -743,7 +743,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <div class="card" style="cursor:pointer;text-align:center" onclick="syncNow()"><div style="font-size:28px;margin-bottom:8px">🔄</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Sync Now</div></div>
           <div class="card" style="cursor:pointer;text-align:center" onclick="backupData()"><div style="font-size:28px;margin-bottom:8px">💾</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Backup</div></div>
           <div class="card" style="cursor:pointer;text-align:center" onclick="openLinkModal()"><div style="font-size:28px;margin-bottom:8px">🔗</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Team Link</div></div>
-          <div class="card" style="cursor:pointer;text-align:center" onclick="nav('duplicates',null)"><div style="font-size:28px;margin-bottom:8px">🔍</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Duplicates</div></div>
+          <div class="card admin-only-card" style="cursor:pointer;text-align:center" onclick="nav('duplicates',null)"><div style="font-size:28px;margin-bottom:8px">🔍</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Duplicates</div></div>
           <div class="card" style="cursor:pointer;text-align:center" onclick="exportCSV()"><div style="font-size:28px;margin-bottom:8px">📊</div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">Export CSV</div></div>
         </div>
         <div class="section-title">Employee Roster</div>
@@ -777,7 +777,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
     <div class="mob-drawer-item" onclick="closeMobMore();nav('weeklyreport',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="mob-drawer-label">Weekly Report</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('invoices',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="mob-drawer-label">Invoices</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('teamlink',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span class="mob-drawer-label">Team Link</span></div>
-    <div class="mob-drawer-item" onclick="closeMobMore();nav('duplicates',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="mob-drawer-label">Duplicates</span></div>
+    <div class="mob-drawer-item admin-only" style="display:none" onclick="closeMobMore();nav('duplicates',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span class="mob-drawer-label">Duplicates</span></div>
     <div class="mob-drawer-item" id="mob-admin-item" style="display:none" onclick="closeMobMore();nav('admin',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span class="mob-drawer-label">Admin Panel</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('notifications',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="mob-drawer-label">Notifications</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="mob-drawer-label" style="color:var(--red)">Logout</span></div>
@@ -1542,6 +1542,15 @@ function updateNotifBadge(){const unread=STATE.notifications.filter(n=>!n.read).
 
 // ═══ DUPLICATES PAGE ═══
 function renderDuplicates(){
+  if(!isAdmin()){
+    document.getElementById('dup-today').textContent='—';
+    document.getElementById('dup-total').textContent='—';
+    document.getElementById('dup-merged').textContent='—';
+    document.getElementById('dup-suspects-count').textContent='—';
+    document.getElementById('dup-suspects-list').innerHTML=`<div style="text-align:center;padding:40px;color:var(--red);font-size:14px;background:rgba(255,61,104,.06);border:1px dashed rgba(255,61,104,.2);border-radius:12px">🔒 هذا القسم للأدمن فقط</div>`;
+    document.getElementById('dup-log-tbody').innerHTML=`<tr><td colspan="4" class="table-empty">🔒 غير مسموح</td></tr>`;
+    return;
+  }
   const s=STATE.dupStats;
   document.getElementById('dup-today').textContent=s.today;
   document.getElementById('dup-total').textContent=s.total;
@@ -1626,9 +1635,21 @@ let erPeriod='week';
 function erSetPeriod(p,el){erPeriod=p;document.querySelectorAll('.er-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');erRender()}
 function erPopulateSelect(){
   const sel=document.getElementById('er-emp-select');if(!sel)return;
-  const emps=STATE.employees.filter(e=>e.role==='sales'||e.role==='social');
-  sel.innerHTML='<option value="">-- اختر موظف --</option>'+emps.map(e=>`<option value="${e.id}">[${e.role==='sales'?'Sales':'Social'}] ${e.name}</option>`).join('');
-  if(!isAdmin()&&SESSION.empId)sel.value=SESSION.empId;
+  if(!isAdmin()){
+    // موظف عادي — يشوف نفسه بس، مش يقدر يغير
+    const emp=STATE.employees.find(e=>e.id===SESSION.empId);
+    sel.innerHTML=emp?`<option value="${emp.id}">[${emp.role==='sales'?'Sales':'Social'}] ${emp.name}</option>`:'<option value="">—</option>';
+    sel.value=SESSION.empId||'';
+    sel.disabled=true;
+    sel.style.opacity='0.6';
+    sel.style.cursor='not-allowed';
+  }else{
+    const emps=STATE.employees.filter(e=>e.role==='sales'||e.role==='social');
+    sel.innerHTML='<option value="">-- اختر موظف --</option>'+emps.map(e=>`<option value="${e.id}">[${e.role==='sales'?'Sales':'Social'}] ${e.name}</option>`).join('');
+    sel.disabled=false;
+    sel.style.opacity='';
+    sel.style.cursor='';
+  }
 }
 function initWeeklyReport(){erPopulateSelect();erRender()}
 function erGetPeriodLeads(empId,role){
@@ -1654,6 +1675,8 @@ function erRender(){
   const body=document.getElementById('er-body');if(!body)return;
   const sel=document.getElementById('er-emp-select');const empId=sel?sel.value:'';
   if(!empId){body.innerHTML='<div class="er-empty">اختر موظف من القائمة لعرض التقرير</div>';return}
+  // موظف عادي — ميشوفش غير نفسه
+  if(!isAdmin() && empId !== SESSION.empId){body.innerHTML='<div class="er-empty" style="color:var(--red)">🔒 مسموح بعرض تقريرك بس</div>';return}
   const emp=STATE.employees.find(e=>e.id===empId);
   if(!emp){body.innerHTML='<div class="er-empty">موظف غير موجود</div>';return}
   const leads=erGetPeriodLeads(empId,emp.role);
@@ -1724,6 +1747,8 @@ function erPrint() {
   const sel = document.getElementById('er-emp-select');
   const empId = sel ? sel.value : '';
   if (!empId) { toast('اختر موظف أولاً', 'error'); return; }
+  // موظف عادي — ميطبعش غير نفسه
+  if(!isAdmin() && empId !== SESSION.empId){ toast('🔒 مسموح بطباعة تقريرك بس', 'error'); return; }
   const emp = STATE.employees.find(e => e.id === empId);
   if (!emp) return;
 

@@ -2124,7 +2124,7 @@ async function uploadCvToCloudinary(file){
   if(area)area.style.pointerEvents='none';
   const formData=new FormData();
   formData.append('file',file);
-  formData.append('upload_preset','ml_default');
+  formData.append('upload_preset','egygulf_unsigned');
   const xhr=new XMLHttpRequest();
   xhr.upload.onprogress=e=>{
     if(e.lengthComputable){const p=Math.round(e.loaded/e.total*100);if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(lbl)lbl.textContent=p<100?'جاري الرفع...':'جاري المعالجة...';}

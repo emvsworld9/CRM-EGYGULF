@@ -653,7 +653,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
       <!-- RECRUITERS -->
       <div class="page" id="page-recruiters">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
           <div><div class="section-title" style="margin-bottom:2px">👥 Recruiters</div><div style="font-size:11px;color:var(--text3)"><span id="rec-total">0</span> مرشح مسجل</div></div>
           <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="syncNow()">🔄</button><button class="btn btn-gold btn-sm" onclick="openRecModal()">+ إضافة مرشح</button></div>
         </div>
@@ -856,6 +856,46 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="field"><label>ملاحظات</label><input id="rec-notes" placeholder="أي ملاحظات إضافية..."></div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveRecruiter()">✅ حفظ المرشح</button></div>
+  </div>
+</div>
+
+<!-- EDIT RECRUITER MODAL -->
+<div class="modal-overlay" id="rec-edit-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><div class="modal-title">✏️ تعديل بيانات المرشح</div><button class="modal-close" onclick="closeModal('rec-edit-modal')">✕</button></div>
+    <input type="hidden" id="rec-edit-id">
+    <div class="form-grid">
+      <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-edit-name" placeholder="أحمد محمد"></div>
+      <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-edit-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
+      <div class="field"><label>الوظيفة المطلوبة</label><input id="rec-edit-job" placeholder="Sales Rep, Accountant..."></div>
+      <div class="field"><label>مستوى الإنجليزي</label>
+        <select id="rec-edit-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="">-- اختر --</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Fluent">Fluent</option>
+        </select>
+      </div>
+      <div class="field"><label>المؤهل الدراسي</label>
+        <select id="rec-edit-qual" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="">-- اختر --</option>
+          <option value="High School">ثانوية عامة</option>
+          <option value="Diploma">دبلوم</option>
+          <option value="Bachelor">بكالوريوس</option>
+          <option value="Master">ماجستير</option>
+          <option value="PhD">دكتوراه</option>
+        </select>
+      </div>
+      <div class="field"><label>الحالة</label>
+        <select id="rec-edit-status" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="pending">⏳ لم يتم التواصل</option>
+          <option value="contacted">✅ تم التواصل</option>
+        </select>
+      </div>
+      <div class="field"><label>ملاحظات</label><input id="rec-edit-notes" placeholder="أي ملاحظات إضافية..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-edit-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveEditRecruiter()">✅ حفظ التعديلات</button></div>
   </div>
 </div>
 
@@ -1929,7 +1969,8 @@ function erPrint() {
 
 
 // ═══ RECRUITERS ═══
-function recDateFilter(isoDate, range){
+function isRecruiter(){return SESSION.role==='recruiter'}
+function recDateFilter(isoDate,range){
   const d=new Date(isoDate),now=new Date();
   if(range==='today')return d.toDateString()===now.toDateString();
   if(range==='yesterday'){const y=new Date(now);y.setDate(now.getDate()-1);return d.toDateString()===y.toDateString()}
@@ -1942,75 +1983,89 @@ function getFilteredRecruiters(){
   const fs=document.getElementById('rec-f-status')?.value||'';
   const fe=document.getElementById('rec-f-english')?.value||'';
   const fq=document.getElementById('rec-f-qual')?.value||'';
-  return STATE.recruiters.filter(r=>
-    (!fd||recDateFilter(r.added,fd))&&
-    (!fs||r.contactStatus===fs)&&
-    (!fe||r.english===fe)&&
-    (!fq||r.qualification===fq)
-  );
+  return STATE.recruiters.filter(r=>(!fd||recDateFilter(r.added,fd))&&(!fs||r.contactStatus===fs)&&(!fe||r.english===fe)&&(!fq||r.qualification===fq));
 }
 function renderRecruiters(){
   const list=getFilteredRecruiters();
   const totalEl=document.getElementById('rec-total');
   if(totalEl)totalEl.textContent=STATE.recruiters.length;
-  // KPIs
   const kpi=document.getElementById('rec-kpi');
   if(kpi){
     const todayCount=STATE.recruiters.filter(r=>recDateFilter(r.added,'today')).length;
     const contacted=STATE.recruiters.filter(r=>r.contactStatus==='contacted').length;
-    const pending=STATE.recruiters.filter(r=>r.contactStatus!=='contacted').length;
+    const pending=STATE.recruiters.length-contacted;
     kpi.innerHTML=[
       {label:'إجمالي المرشحين',val:STATE.recruiters.length,color:'var(--blue)'},
       {label:'النهارده',val:todayCount,color:'var(--gold)'},
       {label:'تم التواصل',val:contacted,color:'var(--green)'},
       {label:'لم يتم التواصل',val:pending,color:'var(--amber)'},
-    ].map(k=>`<div class="kpi-card"><div class="kpi-glow" style="background:${k.color}"></div><div class="kpi-label">${k.label}</div><div class="kpi-value" style="color:${k.color}">${k.val}</div></div>`).join('');
+    ].map(k=>`<div class="kpi-card"><div class="kpi-glow" style="background:${k.color}"></div><div class="kpi-label">${k.label}</div><div class="kpi-value" style="color:${k.color};font-size:28px">${k.val}</div></div>`).join('');
   }
-  // Table
   const tbody=document.getElementById('rec-tbody');
   const empty=document.getElementById('rec-empty');
   if(!tbody)return;
   if(!list.length){tbody.innerHTML='';if(empty)empty.style.display='block';return}
   if(empty)empty.style.display='none';
+  const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-contacted','Fluent':'tag-interested'};
+  const qualColor={'High School':'tag-noresponse','Diploma':'tag-contacted','Bachelor':'tag-interested','Master':'tag-followup','PhD':'tag-won'};
   tbody.innerHTML=list.map(r=>{
     const isContacted=r.contactStatus==='contacted';
-    const statusTag=isContacted
-      ?`<span class="tag tag-active">✅ تم التواصل</span>`
-      :`<span class="tag tag-pending">⏳ لم يتم التواصل</span>`;
-    const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-contacted','Fluent':'tag-interested'}[r.english]||'tag-noresponse';
-    const qualColor={'High School':'tag-noresponse','Diploma':'tag-contacted','Bachelor':'tag-interested','Master':'tag-followup','PhD':'tag-won'}[r.qualification]||'tag-noresponse';
     return`<tr>
       <td style="font-weight:700;color:var(--text)">${r.name}</td>
-      <td><a href="tel:${r.phone}" style="color:var(--blue);text-decoration:none">${r.phone}</a></td>
-      <td>${r.job||'—'}</td>
-      <td>${r.english?`<span class="tag ${engColor}">${r.english}</span>`:'—'}</td>
-      <td>${r.qualification?`<span class="tag ${qualColor}">${r.qualification}</span>`:'—'}</td>
+      <td><a href="tel:${r.phone}" style="color:var(--blue);text-decoration:none;font-family:'DM Mono',monospace;font-size:11px">${r.phone}</a></td>
+      <td style="color:var(--text2)">${r.job||'—'}</td>
+      <td>${r.english?`<span class="tag ${engColor[r.english]||'tag-noresponse'}">${r.english}</span>`:'—'}</td>
+      <td>${r.qualification?`<span class="tag ${qualColor[r.qualification]||'tag-noresponse'}">${r.qualification}</span>`:'—'}</td>
       <td style="color:var(--text3);font-size:11px">${fmtDate(r.added)}</td>
-      <td>${statusTag}</td>
-      <td>
+      <td>${isContacted?`<span class="tag tag-active">✅ تم التواصل</span>`:`<span class="tag tag-pending">⏳ لم يتم التواصل</span>`}</td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-xs btn-blue" onclick="openEditRecruiter('${r.id}')">✏️ تعديل</button>
         <button class="btn btn-xs ${isContacted?'btn-outline':'btn-success'}" onclick="toggleRecContact('${r.id}')">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
-        <button class="btn btn-xs btn-danger" onclick="deleteRecruiter('${r.id}')" style="margin-top:2px">🗑️</button>
+        <button class="btn btn-xs btn-danger" onclick="deleteRecruiter('${r.id}')">🗑️</button>
       </td>
     </tr>`;
   }).join('');
 }
 function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-job','rec-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
+function openEditRecruiter(id){
+  const r=STATE.recruiters.find(x=>x.id===id);if(!r)return;
+  document.getElementById('rec-edit-id').value=r.id;
+  document.getElementById('rec-edit-name').value=r.name||'';
+  document.getElementById('rec-edit-phone').value=r.phone||'';
+  document.getElementById('rec-edit-job').value=r.job||'';
+  document.getElementById('rec-edit-english').value=r.english||'';
+  document.getElementById('rec-edit-qual').value=r.qualification||'';
+  document.getElementById('rec-edit-status').value=r.contactStatus||'pending';
+  document.getElementById('rec-edit-notes').value=r.notes||'';
+  openModal('rec-edit-modal');
+}
+async function saveEditRecruiter(){
+  const id=document.getElementById('rec-edit-id').value;
+  const r=STATE.recruiters.find(x=>x.id===id);if(!r)return;
+  const name=(document.getElementById('rec-edit-name')?.value||'').trim();
+  const phone=(document.getElementById('rec-edit-phone')?.value||'').trim();
+  if(!name){toast('الاسم مطلوب','error');return}
+  if(!phone){toast('التليفون مطلوب','error');return}
+  r.name=name;r.phone=phone;
+  r.job=document.getElementById('rec-edit-job')?.value||'';
+  r.english=document.getElementById('rec-edit-english')?.value||'';
+  r.qualification=document.getElementById('rec-edit-qual')?.value||'';
+  r.contactStatus=document.getElementById('rec-edit-status')?.value||'pending';
+  r.notes=document.getElementById('rec-edit-notes')?.value||'';
+  LS.set('recruiters',STATE.recruiters);
+  closeModal('rec-edit-modal');
+  toast('Saving...','');
+  await gsPostRec({action:'updateRecruiterRow',id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added]});
+  toast('✅ تم التعديل','success');
+  renderRecruiters();
+}
 async function saveRecruiter(){
   const name=(document.getElementById('rec-name')?.value||'').trim();
   const phone=(document.getElementById('rec-phone')?.value||'').trim();
   const job=(document.getElementById('rec-job')?.value||'').trim();
   if(!name){toast('الاسم مطلوب','error');return}
   if(!phone){toast('التليفون مطلوب','error');return}
-  const rec={
-    id:genId('RC'),
-    name,phone,job,
-    english:document.getElementById('rec-english')?.value||'',
-    qualification:document.getElementById('rec-qual')?.value||'',
-    notes:(document.getElementById('rec-notes')?.value||'').trim(),
-    contactStatus:'pending',
-    addedBy:SESSION.user||'',
-    added:new Date().toISOString()
-  };
+  const rec={id:genId('RC'),name,phone,job,english:document.getElementById('rec-english')?.value||'',qualification:document.getElementById('rec-qual')?.value||'',notes:(document.getElementById('rec-notes')?.value||'').trim(),contactStatus:'pending',addedBy:SESSION.user||'',added:new Date().toISOString()};
   STATE.recruiters.unshift(rec);
   LS.set('recruiters',STATE.recruiters);
   closeModal('rec-modal');
@@ -2020,8 +2075,7 @@ async function saveRecruiter(){
   renderRecruiters();
 }
 async function toggleRecContact(id){
-  const rec=STATE.recruiters.find(r=>r.id===id);
-  if(!rec)return;
+  const rec=STATE.recruiters.find(r=>r.id===id);if(!rec)return;
   rec.contactStatus=rec.contactStatus==='contacted'?'pending':'contacted';
   LS.set('recruiters',STATE.recruiters);
   await gsPostRec({action:'updateRecruiter',id,field:'contactStatus',value:rec.contactStatus});
@@ -2036,10 +2090,7 @@ function deleteRecruiter(id){
     renderRecruiters();
   },'🗑️');
 }
-function clearRecFilters(){
-  ['rec-f-date','rec-f-status','rec-f-english','rec-f-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
-  renderRecruiters();
-}
+function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});renderRecruiters()}
 
 // ═══ INIT ═══
 async function init() {

@@ -160,6 +160,11 @@ tbody tr:active td{background:rgba(255,255,255,.03)}
 .tag-social{background:rgba(157,120,255,.1);color:#9d78ff;border:1px solid rgba(157,120,255,.2)}
 .tag-recruiter{background:rgba(0,212,232,.1);color:#00d4e8;border:1px solid rgba(0,212,232,.2)}
 .tag-blue{background:rgba(61,142,255,.1);color:#3d8eff;border:1px solid rgba(61,142,255,.2)}
+body.is-recruiter .nav-item:not(.recruiter-only){display:none!important}
+body.is-recruiter .nav-section-label{display:none!important}
+body.is-recruiter .recruiter-section-label{display:block!important}
+body.is-recruiter #topbar-add-btn{display:none!important}
+.recruiter-section-label{display:none}
 .tag-pending{background:rgba(255,176,32,.1);color:#ffb020;border:1px solid rgba(255,176,32,.2)}
 .tag-uploaded{background:rgba(0,229,160,.1);color:#00e5a0;border:1px solid rgba(0,229,160,.2)}
 .tag-rejected{background:rgba(255,61,104,.1);color:#ff3d68;border:1px solid rgba(255,61,104,.2)}
@@ -473,7 +478,8 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="nav-item" onclick="nav('sales',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="label">Sales Team</span></div>
       <div class="nav-item" onclick="nav('social',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="label">Social Media</span></div>
       <div class="nav-item" onclick="nav('teamlink',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span class="label">Team Linking</span></div>
-      <div class="nav-item" onclick="nav('recruiters',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="label">Recruiters</span></div>
+      <div class="nav-section-label recruiter-section-label" style="display:none">Recruiters</div>
+      <div class="nav-item recruiter-only" onclick="nav('recruiters',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="label">Recruiters</span></div>
       <div class="nav-item" onclick="nav('leaderboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span class="label">Leaderboard</span></div>
       <div class="nav-section-label">Reports</div>
       <div class="nav-item" onclick="nav('reports',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="label">Analytics</span></div>
@@ -502,7 +508,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <span id="sync-dot" style="width:6px;height:6px;border-radius:50%;background:var(--amber);display:inline-block"></span>
           <span id="sync-label">Loading</span>
         </span>
-        <button class="btn btn-gold btn-sm" onclick="nav('addlead',null)">
+        <button id="topbar-add-btn" class="btn btn-gold btn-sm" onclick="nav('addlead',null)">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add
         </button>
         <button class="btn btn-ghost btn-icon" onclick="nav('notifications',null)" style="position:relative">
@@ -1212,8 +1218,8 @@ function doAdminLogin(){const pass=document.getElementById('l-admin-pass');if(!p
 function showLoginErr(msg){const el=document.getElementById('lerr');el.textContent=msg;el.style.display='block'}
 function enterApp(){
   const ls=document.getElementById('login-screen');ls.style.opacity='0';ls.style.transition='opacity .4s';setTimeout(()=>ls.classList.add('hidden'),400);
+  document.body.classList.remove('is-admin','is-recruiter');
   if(isAdmin()){document.body.classList.add('is-admin');const mi=document.getElementById('mob-admin-item');if(mi)mi.style.display='flex'}
-  else document.body.classList.remove('is-admin');
   const initials=SESSION.user.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const av=document.getElementById('sidebar-user-avatar'),nm=document.getElementById('sidebar-user-name'),rl=document.getElementById('sidebar-user-role');
   const emp=STATE.employees.find(e=>e.id===SESSION.empId);
@@ -1221,7 +1227,11 @@ function enterApp(){
   if(av){av.textContent=initials;av.style.background=isAdmin()?'linear-gradient(135deg,var(--gold),#d4750a)':actualRole==='recruiter'?'linear-gradient(135deg,var(--cyan),#008fa6)':'linear-gradient(135deg,#7c3aed,#5b21b6)'}
   if(nm)nm.textContent=SESSION.user;
   if(rl)rl.textContent=isAdmin()?'🔐 Admin':actualRole==='recruiter'?'👥 Recruiter':'👤 Employee';
-  if(actualRole==='recruiter'){nav('recruiters',null);return}
+  if(actualRole==='recruiter'){
+    document.body.classList.add('is-recruiter');
+    nav('recruiters',null);
+    return;
+  }
   renderDashboard();updateNotifBadge();updateDupNavBadge();
 }
 function doLogout(){clearSession();const ls=document.getElementById('login-screen');ls.classList.remove('hidden');ls.style.opacity='0';setTimeout(()=>{ls.style.opacity='1';ls.style.transition='opacity .4s'},10);document.body.classList.remove('is-admin')}

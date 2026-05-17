@@ -1006,7 +1006,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 <script>
 // ═══ CONFIG ═══
 const GS_URL='https://script.google.com/macros/s/AKfycbxfpiR2Fxx5tz-sj7KvgcpFHu0_DSGHid1izVHmk2H7yvNrvWFzqgTSKIh-z1ADAb1n/exec';
-const REC_URL='https://script.google.com/macros/s/AKfycbzVbYTxFa8BqHfYCTy2sJC5OfI4WzIcum2VyVnQU4i3QdiUeoU5dEQJs9i94o_ORpH24g/exec';
+const REC_URL='https://script.google.com/macros/s/AKfycbxWUEjJ_p7GW1pzlfe74kJMsrL3Pn3f4GD48OAzW3QdxFTfv_A7v3kV-BoGEI3ET7Q5_g/exec';
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
@@ -1085,8 +1085,18 @@ async function gsGet(action,extra=''){
 async function gsPost(body){
   try{await fetch(GS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
 }
-async function gsPostRec(body){
-  try{await fetch(REC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
+async function gsPostRec(params){
+  return new Promise((resolve)=>{
+    const cbName='reccb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+    let query=Object.keys(params).map(k=>`${k}=${encodeURIComponent(typeof params[k]==='object'?JSON.stringify(params[k]):params[k])}`).join('&');
+    const url=`${REC_URL}?${query}&callback=${cbName}`;
+    let done=false;
+    window[cbName]=(data)=>{done=true;delete window[cbName];document.getElementById('rec-jsonp')?.remove();resolve(data)};
+    const s=document.createElement('script');s.id='rec-jsonp';s.src=url;
+    s.onerror=()=>{if(!done){done=true;delete window[cbName];resolve(null)}};
+    document.body.appendChild(s);
+    setTimeout(()=>{if(!done){done=true;delete window[cbName];resolve(null)}},10000);
+  });
 }
 
 // ═══ ROW MAPPERS ═══

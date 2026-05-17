@@ -1005,8 +1005,8 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
 <script>
 // ═══ CONFIG ═══
-const GS_URL='https://script.google.com/macros/s/AKfycbxfpiR2Fxx5tz-sj7KvgcpFHu0_DSGHid1izVHmk2H7yvNrvWFzqgTSKIh-z1ADAb1n/exec';
-const REC_URL='https://script.google.com/macros/s/AKfycbxWUEjJ_p7GW1pzlfe74kJMsrL3Pn3f4GD48OAzW3QdxFTfv_A7v3kV-BoGEI3ET7Q5_g/exec';
+const GS_URL='https://script.google.com/macros/s/AKfycbx8MwbEr_EM9ZnOo5ziddAcgONurXP7r6UCj0EIQAFd5veNUtzNPEMxTx-fYb5gwTiZ/exec';
+const REC_URL='https://script.google.com/macros/s/AKfycbx8MwbEr_EM9ZnOo5ziddAcgONurXP7r6UCj0EIQAFd5veNUtzNPEMxTx-fYb5gwTiZ/exec';
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
@@ -2015,7 +2015,7 @@ async function saveRecruiter(){
   LS.set('recruiters',STATE.recruiters);
   closeModal('rec-modal');
   toast('Saving...','');
-  await gsPostRec({action:'appendRecruiter',row:[rec.id,rec.name,rec.phone,rec.job,rec.english,rec.qualification,rec.notes,rec.contactStatus,rec.addedBy,rec.added]});
+  await gsPostRec({action:'appendRecruiter',row:[rec.id,rec.name,rec.phone,rec.job,rec.english,rec.qualification,rec.contactStatus,rec.addedBy,rec.added]});
   toast('✅ تم حفظ المرشح: '+name,'success');
   renderRecruiters();
 }

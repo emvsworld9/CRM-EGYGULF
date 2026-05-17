@@ -869,41 +869,74 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
 <!-- EDIT RECRUITER MODAL -->
 <div class="modal-overlay" id="rec-edit-modal">
-  <div class="modal" style="max-width:500px">
+  <div class="modal" style="max-width:520px">
     <div class="modal-header"><div class="modal-title">✏️ تعديل بيانات المرشح</div><button class="modal-close" onclick="closeModal('rec-edit-modal')">✕</button></div>
     <input type="hidden" id="rec-edit-id">
-    <div class="form-grid">
-      <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-edit-name" placeholder="أحمد محمد"></div>
-      <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-edit-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
-      <div class="field"><label>الوظيفة المطلوبة</label><input id="rec-edit-job" placeholder="Sales Rep, Accountant..."></div>
-      <div class="field"><label>مستوى الإنجليزي</label>
-        <select id="rec-edit-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
-          <option value="">-- اختر --</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-          <option value="Fluent">Fluent</option>
-        </select>
-      </div>
-      <div class="field"><label>المؤهل الدراسي</label>
-        <select id="rec-edit-qual" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
-          <option value="">-- اختر --</option>
-          <option value="High School">ثانوية عامة</option>
-          <option value="Diploma">دبلوم</option>
-          <option value="Bachelor">بكالوريوس</option>
-          <option value="Master">ماجستير</option>
-          <option value="PhD">دكتوراه</option>
-        </select>
-      </div>
-      <div class="field"><label>الحالة</label>
-        <select id="rec-edit-status" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
-          <option value="pending">⏳ لم يتم التواصل</option>
-          <option value="contacted">✅ تم التواصل</option>
-        </select>
-      </div>
-      <div class="field"><label>ملاحظات</label><input id="rec-edit-notes" placeholder="أي ملاحظات إضافية..."></div>
+    <!-- tabs -->
+    <div style="display:flex;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:16px;gap:2px">
+      <button class="ltab active" id="rectab-info" onclick="switchRecTab('info')" style="flex:1;justify-content:center">📋 البيانات</button>
+      <button class="ltab" id="rectab-cv" onclick="switchRecTab('cv')" style="flex:1;justify-content:center">📄 السيرة الذاتية</button>
     </div>
-    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-edit-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveEditRecruiter()">✅ حفظ التعديلات</button></div>
+    <!-- tab: info -->
+    <div id="rec-tab-info">
+      <div class="form-grid">
+        <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-edit-name" placeholder="أحمد محمد"></div>
+        <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-edit-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
+        <div class="field"><label>الوظيفة المطلوبة</label><input id="rec-edit-job" placeholder="Sales Rep, Accountant..."></div>
+        <div class="field"><label>مستوى الإنجليزي</label>
+          <select id="rec-edit-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+            <option value="">-- اختر --</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Fluent">Fluent</option>
+          </select>
+        </div>
+        <div class="field"><label>المؤهل الدراسي</label>
+          <select id="rec-edit-qual" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+            <option value="">-- اختر --</option>
+            <option value="High School">ثانوية عامة</option>
+            <option value="Diploma">دبلوم</option>
+            <option value="Bachelor">بكالوريوس</option>
+            <option value="Master">ماجستير</option>
+            <option value="PhD">دكتوراه</option>
+          </select>
+        </div>
+        <div class="field"><label>الحالة</label>
+          <select id="rec-edit-status" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+            <option value="pending">⏳ لم يتم التواصل</option>
+            <option value="contacted">✅ تم التواصل</option>
+          </select>
+        </div>
+        <div class="field"><label>ملاحظات</label><input id="rec-edit-notes" placeholder="أي ملاحظات إضافية..."></div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-edit-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveEditRecruiter()">✅ حفظ التعديلات</button></div>
+    </div>
+    <!-- tab: cv -->
+    <div id="rec-tab-cv" style="display:none">
+      <!-- current CV display -->
+      <div id="rec-cv-current" style="margin-bottom:16px"></div>
+      <!-- upload area -->
+      <div id="rec-cv-upload-area" style="border:2px dashed rgba(245,166,35,.3);border-radius:var(--radius-lg);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(245,166,35,.03)" onclick="document.getElementById('rec-cv-file').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)';this.style.background='rgba(245,166,35,.07)'" ondragleave="this.style.borderColor='rgba(245,166,35,.3)';this.style.background='rgba(245,166,35,.03)'" ondrop="event.preventDefault();this.style.borderColor='rgba(245,166,35,.3)';this.style.background='rgba(245,166,35,.03)';handleCvDrop(event)">
+        <div style="font-size:36px;margin-bottom:10px">📄</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">اسحب الـ CV هنا أو اضغط للاختيار</div>
+        <div style="font-size:11px;color:var(--text3)">PDF, DOC, DOCX — حجم أقصى 10MB</div>
+        <input type="file" id="rec-cv-file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="uploadCvToCloudinary(this.files[0])">
+      </div>
+      <!-- progress -->
+      <div id="rec-cv-progress" style="display:none;margin-top:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:12px;color:var(--text2)" id="rec-cv-progress-label">جاري الرفع...</span>
+          <span style="font-size:12px;color:var(--gold);font-family:'DM Mono',monospace" id="rec-cv-progress-pct">0%</span>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden">
+          <div id="rec-cv-progress-bar" style="height:100%;background:linear-gradient(90deg,var(--gold),#d4750a);border-radius:3px;width:0%;transition:width .3s"></div>
+        </div>
+      </div>
+      <div class="modal-footer" style="margin-top:16px">
+        <button class="btn btn-outline" onclick="closeModal('rec-edit-modal')">إلغاء</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2040,6 +2073,7 @@ function renderRecruiters(){
         ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.qualification}</span>`:''}
       </div>
       ${r.notes?`<div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(245,166,35,.3)">📝 ${r.notes}</div>`:''}
+      ${r.cvUrl?`<a href="${r.cvUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);text-decoration:none;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:20px;padding:3px 10px">📄 CV متاح — فتح</a>`:'<span style="font-size:10px;color:var(--text3)">📄 لا يوجد CV</span>'}
       <div style="font-size:10px;color:var(--text3)">📅 ${fmtDate(r.added)}</div>
       <div style="display:flex;gap:5px">
         <button class="btn btn-blue btn-xs" onclick="openEditRecruiter('${r.id}')" style="flex:1;justify-content:center">✏️ تعديل</button>
@@ -2050,6 +2084,77 @@ function renderRecruiters(){
   }).join('');
 }
 function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-job','rec-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
+function switchRecTab(tab){
+  ['info','cv'].forEach(t=>{
+    const panel=document.getElementById('rec-tab-'+t);
+    const btn=document.getElementById('rectab-'+t);
+    if(panel)panel.style.display=t===tab?'':'none';
+    if(btn)btn.classList.toggle('active',t===tab);
+  });
+  if(tab==='cv'){const id=document.getElementById('rec-edit-id').value;const r=STATE.recruiters.find(x=>x.id===id);renderCvCurrent(r);}
+}
+function renderCvCurrent(r){
+  const el=document.getElementById('rec-cv-current');if(!el)return;
+  if(r&&r.cvUrl){
+    el.innerHTML=`<div style="background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="font-size:28px">📄</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:2px">✅ CV محفوظ</div>
+        <div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.cvName||'CV مرفوع'}</div>
+      </div>
+      <a href="${r.cvUrl}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
+      <button class="btn btn-danger btn-xs" onclick="deleteCv('${r.id}')">🗑️</button>
+    </div>`;
+  } else {
+    el.innerHTML=`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px">لا يوجد CV مرفوع بعد</div>`;
+  }
+}
+function handleCvDrop(event){const file=event.dataTransfer.files[0];if(file)uploadCvToCloudinary(file);}
+async function uploadCvToCloudinary(file){
+  if(!file)return;
+  if(file.size>10*1024*1024){toast('الملف كبير — الحد 10MB','error');return}
+  const id=document.getElementById('rec-edit-id').value;
+  const r=STATE.recruiters.find(x=>x.id===id);if(!r){toast('احفظ بيانات المرشح الأول','error');return}
+  const prog=document.getElementById('rec-cv-progress');
+  const bar=document.getElementById('rec-cv-progress-bar');
+  const lbl=document.getElementById('rec-cv-progress-label');
+  const pct=document.getElementById('rec-cv-progress-pct');
+  const area=document.getElementById('rec-cv-upload-area');
+  if(prog)prog.style.display='block';
+  if(area)area.style.pointerEvents='none';
+  const formData=new FormData();
+  formData.append('file',file);
+  formData.append('upload_preset','ml_default');
+  formData.append('folder','egygulf_cvs');
+  const xhr=new XMLHttpRequest();
+  xhr.upload.onprogress=e=>{
+    if(e.lengthComputable){const p=Math.round(e.loaded/e.total*100);if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(lbl)lbl.textContent=p<100?'جاري الرفع...':'جاري المعالجة...';}
+  };
+  xhr.onload=async()=>{
+    if(area)area.style.pointerEvents='';
+    if(prog)prog.style.display='none';
+    if(bar)bar.style.width='0%';
+    if(xhr.status===200){
+      const res=JSON.parse(xhr.responseText);
+      r.cvUrl=res.secure_url;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
+      LS.set('recruiters',STATE.recruiters);
+      toast('✅ تم رفع الـ CV بنجاح','success');
+      renderCvCurrent(r);renderRecruiters();
+      await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl,r.cvName]});
+    } else {toast('فشل الرفع — حاول تاني','error');}
+  };
+  xhr.onerror=()=>{if(area)area.style.pointerEvents='';if(prog)prog.style.display='none';toast('خطأ في الاتصال','error');};
+  xhr.open('POST','https://api.cloudinary.com/v1_1/dffltsgoh/raw/upload');
+  xhr.send(formData);
+}
+async function deleteCv(id){
+  const r=STATE.recruiters.find(x=>x.id===id);if(!r)return;
+  r.cvUrl='';r.cvName='';r.cvUploadedAt='';
+  LS.set('recruiters',STATE.recruiters);
+  renderCvCurrent(r);renderRecruiters();
+  await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,'','']});
+  toast('تم حذف الـ CV','success');
+}
 function openEditRecruiter(id){
   const r=STATE.recruiters.find(x=>x.id===id);if(!r)return;
   document.getElementById('rec-edit-id').value=r.id;
@@ -2060,6 +2165,7 @@ function openEditRecruiter(id){
   document.getElementById('rec-edit-qual').value=r.qualification||'';
   document.getElementById('rec-edit-status').value=r.contactStatus||'pending';
   document.getElementById('rec-edit-notes').value=r.notes||'';
+  switchRecTab('info');
   openModal('rec-edit-modal');
 }
 async function saveEditRecruiter(){

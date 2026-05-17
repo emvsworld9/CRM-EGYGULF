@@ -471,6 +471,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="nav-item" onclick="nav('sales',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="label">Sales Team</span></div>
       <div class="nav-item" onclick="nav('social',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="label">Social Media</span></div>
       <div class="nav-item" onclick="nav('teamlink',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span class="label">Team Linking</span></div>
+      <div class="nav-item" onclick="nav('recruiters',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.87"/></svg><span class="label">Recruiters</span></div>
       <div class="nav-item" onclick="nav('leaderboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span class="label">Leaderboard</span></div>
       <div class="nav-section-label">Reports</div>
       <div class="nav-item" onclick="nav('reports',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="label">Analytics</span></div>
@@ -643,12 +644,52 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
       <!-- TEAM LINK -->
       <div class="page" id="page-teamlink">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
           <div class="section-title" style="margin-bottom:0">Team Linking</div>
           <button class="btn btn-gold btn-sm admin-only" onclick="openLinkModal()">+ Create Pair</button>
         </div>
         <div class="alert alert-info" style="margin-bottom:14px">Leads pass automatically from Social Media → Sales.</div>
         <div id="team-pairs"></div>
+      </div>
+
+      <!-- RECRUITERS -->
+      <div class="page" id="page-recruiters">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+          <div><div class="section-title" style="margin-bottom:2px">👥 Recruiters</div><div style="font-size:11px;color:var(--text3)"><span id="rec-total">0</span> مرشح مسجل</div></div>
+          <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="syncNow()">🔄</button><button class="btn btn-gold btn-sm" onclick="openRecModal()">+ إضافة مرشح</button></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <select id="rec-f-date" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
+            <option value="">📅 كل الأيام</option>
+            <option value="today">النهارده</option>
+            <option value="yesterday">أمس</option>
+            <option value="week">الأسبوع</option>
+            <option value="month">الشهر</option>
+          </select>
+          <select id="rec-f-status" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
+            <option value="">كل الحالات</option>
+            <option value="pending">⏳ لم يتم التواصل</option>
+            <option value="contacted">✅ تم التواصل</option>
+          </select>
+          <select id="rec-f-english" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
+            <option value="">كل مستويات الإنجليزي</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Fluent">Fluent</option>
+          </select>
+          <select id="rec-f-qual" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
+            <option value="">كل المؤهلات</option>
+            <option value="High School">ثانوية عامة</option>
+            <option value="Diploma">دبلوم</option>
+            <option value="Bachelor">بكالوريوس</option>
+            <option value="Master">ماجستير</option>
+            <option value="PhD">دكتوراه</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="clearRecFilters()">✕</button>
+        </div>
+        <div class="kpi-grid" id="rec-kpi" style="margin-bottom:14px"></div>
+        <div class="table-wrap"><table><thead><tr><th>الاسم</th><th>التليفون</th><th>الوظيفة</th><th>الإنجليزي</th><th>المؤهل</th><th>تاريخ التسجيل</th><th>الحالة</th><th>Actions</th></tr></thead><tbody id="rec-tbody"></tbody></table></div>
+        <div id="rec-empty" style="display:none" class="table-empty">لا يوجد مرشحين في هذا الفلتر</div>
       </div>
 
       <!-- LEADERBOARD -->
@@ -773,6 +814,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
   <div class="mob-drawer-grid">
     <div class="mob-drawer-item" onclick="closeMobMore();nav('sales',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="mob-drawer-label">Sales Team</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('social',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 11.8a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="mob-drawer-label">Social Media</span></div>
+    <div class="mob-drawer-item" onclick="closeMobMore();nav('recruiters',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span class="mob-drawer-label">Recruiters</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('reports',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="mob-drawer-label">Analytics</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('weeklyreport',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="mob-drawer-label">Weekly Report</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('invoices',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span class="mob-drawer-label">Invoices</span></div>
@@ -781,6 +823,39 @@ body:not(.is-admin) .admin-only-card{display:none!important}
     <div class="mob-drawer-item" id="mob-admin-item" style="display:none" onclick="closeMobMore();nav('admin',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg><span class="mob-drawer-label">Admin Panel</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();nav('notifications',null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="mob-drawer-label">Notifications</span></div>
     <div class="mob-drawer-item" onclick="closeMobMore();doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span class="mob-drawer-label" style="color:var(--red)">Logout</span></div>
+  </div>
+</div>
+
+<!-- RECRUITER MODAL -->
+<div class="modal-overlay" id="rec-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-header"><div class="modal-title">👥 إضافة مرشح جديد</div><button class="modal-close" onclick="closeModal('rec-modal')">✕</button></div>
+    <div class="form-grid">
+      <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-name" placeholder="أحمد محمد"></div>
+      <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
+      <div class="field"><label>الوظيفة المطلوبة <span class="req">*</span></label><input id="rec-job" placeholder="Sales Rep, Accountant..."></div>
+      <div class="field"><label>مستوى الإنجليزي</label>
+        <select id="rec-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="">-- اختر --</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Fluent">Fluent</option>
+        </select>
+      </div>
+      <div class="field"><label>المؤهل الدراسي</label>
+        <select id="rec-qual" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="">-- اختر --</option>
+          <option value="High School">ثانوية عامة</option>
+          <option value="Diploma">دبلوم</option>
+          <option value="Bachelor">بكالوريوس</option>
+          <option value="Master">ماجستير</option>
+          <option value="PhD">دكتوراه</option>
+        </select>
+      </div>
+      <div class="field"><label>ملاحظات</label><input id="rec-notes" placeholder="أي ملاحظات إضافية..."></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveRecruiter()">✅ حفظ المرشح</button></div>
   </div>
 </div>
 
@@ -931,10 +1006,11 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 <script>
 // ═══ CONFIG ═══
 const GS_URL='https://script.google.com/macros/s/AKfycbxfpiR2Fxx5tz-sj7KvgcpFHu0_DSGHid1izVHmk2H7yvNrvWFzqgTSKIh-z1ADAb1n/exec';
+const REC_URL='https://script.google.com/macros/s/AKfycbzVbYTxFa8BqHfYCTy2sJC5OfI4WzIcum2VyVnQU4i3QdiUeoU5dEQJs9i94o_ORpH24g/exec';
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
-let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[]};
+let STATE={leads:[],employees:[],pairs:[],notifications:[],dupLog:[],dupStats:{today:0,total:0,merged:0,pending:0},invoices:[],visits:[],comments:[],recruiters:[]};
 const LS={get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem('eg_'+k))||d}catch{return d}},set:(k,v)=>localStorage.setItem('eg_'+k,JSON.stringify(v))};
 let SESSION={user:null,role:null,empId:null};
 function getSession(){try{return JSON.parse(sessionStorage.getItem('eg_sess'))||null}catch{return null}}
@@ -1009,6 +1085,9 @@ async function gsGet(action,extra=''){
 async function gsPost(body){
   try{await fetch(GS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
 }
+async function gsPostRec(body){
+  try{await fetch(REC_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})}catch(e){}
+}
 
 // ═══ ROW MAPPERS ═══
 function rowToEmployee(row){if(!row||!row[0])return null;return{id:String(row[0]),name:String(row[1]||''),email:String(row[2]||''),password:String(row[3]||''),role:String(row[4]||'sales'),team:String(row[5]||''),phone:String(row[6]||''),color:String(row[7]||'#1a2455'),status:String(row[8]||'active')}}
@@ -1040,6 +1119,7 @@ async function syncNow(silent=false){
     STATE.notifications=LS.get('notifications',[]);
     STATE.dupLog=LS.get('dupLog',[]);
     STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
+    STATE.recruiters=LS.get('recruiters',[]);
     setSyncIndicator('ok');updateSyncStatus();updateDupNavBadge();
     if(!silent)toast('✅ Synced — '+STATE.leads.length+' leads','success');
     return true;
@@ -1119,7 +1199,7 @@ function closeMobMore(){document.getElementById('mob-more-overlay').classList.re
 function setMobNav(page){document.querySelectorAll('.mob-nav-item').forEach(n=>n.classList.remove('active'));const el=document.getElementById('mobnav-'+page);if(el)el.classList.add('active')}
 
 // ═══ NAV ═══
-const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Weekly Report'};
+const pageNames={dashboard:'Dashboard',leads:'Lead Database',addlead:'Add New Lead',duplicates:'Duplicate Engine',sales:'Sales Team',social:'Social Media',teamlink:'Team Linking',recruiters:'Recruiters',leaderboard:'Leaderboard',reports:'Analytics',notifications:'Notifications',admin:'Admin Panel',invoices:'Invoices',weeklyreport:'Weekly Report'};
 var currentPage='dashboard';
 function nav(page,el){
   currentPage=page;
@@ -1138,6 +1218,7 @@ function renderPage(p){
   if(p==='sales')renderSalesCards();
   if(p==='social')renderSocialCards();
   if(p==='teamlink')renderTeamPairs();
+  if(p==='recruiters')renderRecruiters();
   if(p==='leaderboard')renderLeaderboard();
   if(p==='reports')renderReports();
   if(p==='notifications')renderNotifications();
@@ -1836,6 +1917,119 @@ function erPrint() {
   w.document.close();
 }
 
+
+// ═══ RECRUITERS ═══
+function recDateFilter(isoDate, range){
+  const d=new Date(isoDate),now=new Date();
+  if(range==='today')return d.toDateString()===now.toDateString();
+  if(range==='yesterday'){const y=new Date(now);y.setDate(now.getDate()-1);return d.toDateString()===y.toDateString()}
+  if(range==='week'){const s=new Date(now);s.setDate(now.getDate()-now.getDay());s.setHours(0,0,0,0);return d>=s}
+  if(range==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  return true;
+}
+function getFilteredRecruiters(){
+  const fd=document.getElementById('rec-f-date')?.value||'';
+  const fs=document.getElementById('rec-f-status')?.value||'';
+  const fe=document.getElementById('rec-f-english')?.value||'';
+  const fq=document.getElementById('rec-f-qual')?.value||'';
+  return STATE.recruiters.filter(r=>
+    (!fd||recDateFilter(r.added,fd))&&
+    (!fs||r.contactStatus===fs)&&
+    (!fe||r.english===fe)&&
+    (!fq||r.qualification===fq)
+  );
+}
+function renderRecruiters(){
+  const list=getFilteredRecruiters();
+  const totalEl=document.getElementById('rec-total');
+  if(totalEl)totalEl.textContent=STATE.recruiters.length;
+  // KPIs
+  const kpi=document.getElementById('rec-kpi');
+  if(kpi){
+    const todayCount=STATE.recruiters.filter(r=>recDateFilter(r.added,'today')).length;
+    const contacted=STATE.recruiters.filter(r=>r.contactStatus==='contacted').length;
+    const pending=STATE.recruiters.filter(r=>r.contactStatus!=='contacted').length;
+    kpi.innerHTML=[
+      {label:'إجمالي المرشحين',val:STATE.recruiters.length,color:'var(--blue)'},
+      {label:'النهارده',val:todayCount,color:'var(--gold)'},
+      {label:'تم التواصل',val:contacted,color:'var(--green)'},
+      {label:'لم يتم التواصل',val:pending,color:'var(--amber)'},
+    ].map(k=>`<div class="kpi-card"><div class="kpi-glow" style="background:${k.color}"></div><div class="kpi-label">${k.label}</div><div class="kpi-value" style="color:${k.color}">${k.val}</div></div>`).join('');
+  }
+  // Table
+  const tbody=document.getElementById('rec-tbody');
+  const empty=document.getElementById('rec-empty');
+  if(!tbody)return;
+  if(!list.length){tbody.innerHTML='';if(empty)empty.style.display='block';return}
+  if(empty)empty.style.display='none';
+  tbody.innerHTML=list.map(r=>{
+    const isContacted=r.contactStatus==='contacted';
+    const statusTag=isContacted
+      ?`<span class="tag tag-active">✅ تم التواصل</span>`
+      :`<span class="tag tag-pending">⏳ لم يتم التواصل</span>`;
+    const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-contacted','Fluent':'tag-interested'}[r.english]||'tag-noresponse';
+    const qualColor={'High School':'tag-noresponse','Diploma':'tag-contacted','Bachelor':'tag-interested','Master':'tag-followup','PhD':'tag-won'}[r.qualification]||'tag-noresponse';
+    return`<tr>
+      <td style="font-weight:700;color:var(--text)">${r.name}</td>
+      <td><a href="tel:${r.phone}" style="color:var(--blue);text-decoration:none">${r.phone}</a></td>
+      <td>${r.job||'—'}</td>
+      <td>${r.english?`<span class="tag ${engColor}">${r.english}</span>`:'—'}</td>
+      <td>${r.qualification?`<span class="tag ${qualColor}">${r.qualification}</span>`:'—'}</td>
+      <td style="color:var(--text3);font-size:11px">${fmtDate(r.added)}</td>
+      <td>${statusTag}</td>
+      <td>
+        <button class="btn btn-xs ${isContacted?'btn-outline':'btn-success'}" onclick="toggleRecContact('${r.id}')">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
+        <button class="btn btn-xs btn-danger" onclick="deleteRecruiter('${r.id}')" style="margin-top:2px">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-job','rec-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
+async function saveRecruiter(){
+  const name=(document.getElementById('rec-name')?.value||'').trim();
+  const phone=(document.getElementById('rec-phone')?.value||'').trim();
+  const job=(document.getElementById('rec-job')?.value||'').trim();
+  if(!name){toast('الاسم مطلوب','error');return}
+  if(!phone){toast('التليفون مطلوب','error');return}
+  const rec={
+    id:genId('RC'),
+    name,phone,job,
+    english:document.getElementById('rec-english')?.value||'',
+    qualification:document.getElementById('rec-qual')?.value||'',
+    notes:(document.getElementById('rec-notes')?.value||'').trim(),
+    contactStatus:'pending',
+    addedBy:SESSION.user||'',
+    added:new Date().toISOString()
+  };
+  STATE.recruiters.unshift(rec);
+  LS.set('recruiters',STATE.recruiters);
+  closeModal('rec-modal');
+  toast('Saving...','');
+  await gsPostRec({action:'appendRecruiter',row:[rec.id,rec.name,rec.phone,rec.job,rec.english,rec.qualification,rec.notes,rec.contactStatus,rec.addedBy,rec.added]});
+  toast('✅ تم حفظ المرشح: '+name,'success');
+  renderRecruiters();
+}
+async function toggleRecContact(id){
+  const rec=STATE.recruiters.find(r=>r.id===id);
+  if(!rec)return;
+  rec.contactStatus=rec.contactStatus==='contacted'?'pending':'contacted';
+  LS.set('recruiters',STATE.recruiters);
+  await gsPostRec({action:'updateRecruiter',id,field:'contactStatus',value:rec.contactStatus});
+  renderRecruiters();
+}
+function deleteRecruiter(id){
+  confirmDialog('حذف المرشح','هتتحذف نهائياً — متقدرش ترجعه.',async()=>{
+    STATE.recruiters=STATE.recruiters.filter(r=>r.id!==id);
+    LS.set('recruiters',STATE.recruiters);
+    await gsPostRec({action:'deleteRecruiter',id});
+    toast('تم الحذف','success');
+    renderRecruiters();
+  },'🗑️');
+}
+function clearRecFilters(){
+  ['rec-f-date','rec-f-status','rec-f-english','rec-f-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  renderRecruiters();
+}
 
 // ═══ INIT ═══
 async function init() {

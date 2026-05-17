@@ -2073,7 +2073,7 @@ function renderRecruiters(){
         ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.qualification}</span>`:''}
       </div>
       ${r.notes?`<div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(245,166,35,.3)">📝 ${r.notes}</div>`:''}
-      ${r.cvUrl?`<a href="${r.cvUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);text-decoration:none;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:20px;padding:3px 10px">📄 CV متاح — فتح</a>`:'<span style="font-size:10px;color:var(--text3)">📄 لا يوجد CV</span>'}
+      ${r.cvUrl?`<a href="https://docs.google.com/viewer?url=${encodeURIComponent(r.cvUrl)}&embedded=false" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);text-decoration:none;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:20px;padding:3px 10px">📄 CV متاح — فتح</a>`:'<span style="font-size:10px;color:var(--text3)">📄 لا يوجد CV</span>'}
       <div style="font-size:10px;color:var(--text3)">📅 ${fmtDate(r.added)}</div>
       <div style="display:flex;gap:5px">
         <button class="btn btn-blue btn-xs" onclick="openEditRecruiter('${r.id}')" style="flex:1;justify-content:center">✏️ تعديل</button>
@@ -2096,13 +2096,15 @@ function switchRecTab(tab){
 function renderCvCurrent(r){
   const el=document.getElementById('rec-cv-current');if(!el)return;
   if(r&&r.cvUrl){
+    const viewUrl='https://docs.google.com/viewer?url='+encodeURIComponent(r.cvUrl)+'&embedded=false';
     el.innerHTML=`<div style="background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:var(--radius-lg);padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:12px">
       <div style="font-size:28px">📄</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:2px">✅ CV محفوظ</div>
         <div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.cvName||'CV مرفوع'}</div>
       </div>
-      <a href="${r.cvUrl}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
+      <a href="${viewUrl}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
+      <a href="${r.cvUrl}" download="${r.cvName||'CV'}" class="btn btn-outline btn-xs">⬇️</a>
       <button class="btn btn-danger btn-xs" onclick="deleteCv('${r.id}')">🗑️</button>
     </div>`;
   } else {

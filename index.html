@@ -158,6 +158,8 @@ tbody tr:active td{background:rgba(255,255,255,.03)}
 .tag-admin{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.2)}
 .tag-sales{background:rgba(0,229,160,.1);color:#00e5a0;border:1px solid rgba(0,229,160,.2)}
 .tag-social{background:rgba(157,120,255,.1);color:#9d78ff;border:1px solid rgba(157,120,255,.2)}
+.tag-recruiter{background:rgba(0,212,232,.1);color:#00d4e8;border:1px solid rgba(0,212,232,.2)}
+.tag-blue{background:rgba(61,142,255,.1);color:#3d8eff;border:1px solid rgba(61,142,255,.2)}
 .tag-pending{background:rgba(255,176,32,.1);color:#ffb020;border:1px solid rgba(255,176,32,.2)}
 .tag-uploaded{background:rgba(0,229,160,.1);color:#00e5a0;border:1px solid rgba(0,229,160,.2)}
 .tag-rejected{background:rgba(255,61,104,.1);color:#ff3d68;border:1px solid rgba(255,61,104,.2)}
@@ -688,7 +690,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <button class="btn btn-ghost btn-sm" onclick="clearRecFilters()">✕</button>
         </div>
         <div class="kpi-grid" id="rec-kpi" style="margin-bottom:14px"></div>
-        <div class="table-wrap"><table><thead><tr><th>الاسم</th><th>التليفون</th><th>الوظيفة</th><th>الإنجليزي</th><th>المؤهل</th><th>تاريخ التسجيل</th><th>الحالة</th><th>Actions</th></tr></thead><tbody id="rec-tbody"></tbody></table></div>
+        <div id="rec-card-list" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
         <div id="rec-empty" style="display:none" class="table-empty">لا يوجد مرشحين في هذا الفلتر</div>
       </div>
 
@@ -991,7 +993,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
       <div class="field"><label>Full Name *</label><input id="ae-name" placeholder="Employee Name"></div>
       <div class="field"><label>Email *</label><input id="ae-email" placeholder="email@egygulf.com" type="email"></div>
       <div class="field"><label>Password *</label><input id="ae-pass" placeholder="Password" type="text" style="font-family:'DM Mono',monospace"></div>
-      <div class="field"><label>Role *</label><select id="ae-role"><option value="sales">Sales Rep</option><option value="social">Social Media</option></select></div>
+      <div class="field"><label>Role *</label><select id="ae-role"><option value="sales">Sales Rep</option><option value="social">Social Media</option><option value="recruiter">Recruiter</option></select></div>
       <div class="field"><label>Team</label><input id="ae-team" placeholder="e.g. Team A"></div>
       <div class="field"><label>Phone</label><input id="ae-phone" placeholder="+20..." type="tel"></div>
       <div class="field"><label>Avatar Color</label><select id="ae-color"><option value="#1a2455">Navy</option><option value="#7c3aed">Purple</option><option value="#16a34a">Green</option><option value="#2563eb">Blue</option><option value="#e1306c">Pink</option><option value="#d97706">Amber</option></select></div>
@@ -1204,7 +1206,7 @@ function hideCountryDD(ddId){const dd=document.getElementById(ddId);if(dd)dd.sty
 
 // ═══ LOGIN ═══
 function switchLoginTab(tab,btn){document.querySelectorAll('.ltab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');document.getElementById('lpanel-emp').style.display=tab==='emp'?'':'none';document.getElementById('lpanel-admin').style.display=tab==='admin'?'':'none';document.getElementById('lerr').style.display='none'}
-function populateLoginSelect(){const sel=document.getElementById('l-emp-select');if(!sel)return;if(!STATE.employees.length){sel.innerHTML='<option value="">-- لا يوجد موظفين --</option>';return}sel.innerHTML='<option value="">-- اختر اسمك --</option>'+STATE.employees.map(e=>`<option value="${e.id}">${e.name} (${e.role==='sales'?'Sales':'Social'})</option>`).join('')}
+function populateLoginSelect(){const sel=document.getElementById('l-emp-select');if(!sel)return;if(!STATE.employees.length){sel.innerHTML='<option value="">-- لا يوجد موظفين --</option>';return}const roleLabel={sales:'Sales',social:'Social',recruiter:'Recruiter',admin:'Admin'};sel.innerHTML='<option value="">-- اختر اسمك --</option>'+STATE.employees.map(e=>`<option value="${e.id}">${e.name} (${roleLabel[e.role]||e.role})</option>`).join('')}
 function doEmpLogin(){const sel=document.getElementById('l-emp-select'),passEl=document.getElementById('l-emp-pass');const empId=sel?sel.value:'',passVal=passEl?passEl.value:'';if(!empId){showLoginErr('اختر اسمك');return}const emp=STATE.employees.find(e=>e.id===empId);if(!emp){showLoginErr('موظف غير موجود');return}if(passVal!==emp.password){showLoginErr('كلمة السر غلط');if(passEl)passEl.value='';return}setSession({user:emp.name,role:'employee',empId:emp.id});enterApp()}
 function doAdminLogin(){const pass=document.getElementById('l-admin-pass');if(!pass||pass.value!==ADMIN_CODE){showLoginErr('كود خاطئ');if(pass)pass.value='';return}setSession({user:'Admin',role:'admin',empId:null});enterApp()}
 function showLoginErr(msg){const el=document.getElementById('lerr');el.textContent=msg;el.style.display='block'}
@@ -1214,9 +1216,12 @@ function enterApp(){
   else document.body.classList.remove('is-admin');
   const initials=SESSION.user.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   const av=document.getElementById('sidebar-user-avatar'),nm=document.getElementById('sidebar-user-name'),rl=document.getElementById('sidebar-user-role');
-  if(av){av.textContent=initials;av.style.background=isAdmin()?'linear-gradient(135deg,var(--gold),#d4750a)':'linear-gradient(135deg,#7c3aed,#5b21b6)'}
+  const emp=STATE.employees.find(e=>e.id===SESSION.empId);
+  const actualRole=emp?.role||SESSION.role;
+  if(av){av.textContent=initials;av.style.background=isAdmin()?'linear-gradient(135deg,var(--gold),#d4750a)':actualRole==='recruiter'?'linear-gradient(135deg,var(--cyan),#008fa6)':'linear-gradient(135deg,#7c3aed,#5b21b6)'}
   if(nm)nm.textContent=SESSION.user;
-  if(rl)rl.textContent=isAdmin()?'🔐 Admin':'👤 Employee';
+  if(rl)rl.textContent=isAdmin()?'🔐 Admin':actualRole==='recruiter'?'👥 Recruiter':'👤 Employee';
+  if(actualRole==='recruiter'){nav('recruiters',null);return}
   renderDashboard();updateNotifBadge();updateDupNavBadge();
 }
 function doLogout(){clearSession();const ls=document.getElementById('login-screen');ls.classList.remove('hidden');ls.style.opacity='0';setTimeout(()=>{ls.style.opacity='1';ls.style.transition='opacity .4s'},10);document.body.classList.remove('is-admin')}
@@ -1745,7 +1750,7 @@ async function doMerge(){
 }
 
 // ═══ ADMIN ═══
-function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}">${e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
+function renderAdmin(){const emps=STATE.employees;const roleMap={sales:'tag-sales',social:'tag-social',admin:'tag-admin',recruiter:'tag-recruiter'};document.getElementById('emp-roster-tbody').innerHTML=emps.length?emps.map(e=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:28px;height:28px;border-radius:7px;background:${e.color};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0">${empInitials(e.name)}</div><strong style="color:var(--text);font-size:12px">${e.name}</strong></div></td><td><span class="tag ${roleMap[e.role]||'tag-active'}">${e.role}</span></td><td><span style="font-family:'DM Mono',monospace;font-size:10px;background:rgba(255,255,255,.05);padding:2px 8px;border-radius:5px;color:var(--text2)">${e.password||'—'}</span></td><td><span class="tag ${e.status==='active'?'tag-active':'tag-inactive'}">${e.status||'active'}</span></td><td><button class="btn btn-danger btn-xs" onclick="deleteEmployee('${e.id}')">✕</button></td></tr>`).join(''):`<tr><td colspan="5" class="table-empty">No employees yet.</td></tr>`}
 function openAddEmployee(){if(!isAdmin()){toast('Admin only','error');return}['ae-name','ae-email','ae-pass','ae-team','ae-phone'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});document.getElementById('ae-role').value='sales';document.getElementById('ae-color').value='#1a2455';openModal('add-emp-modal')}
 async function saveEmployee(){if(!isAdmin()){toast('Admin only','error');return}const name=getField('ae-name'),email=getField('ae-email'),pass=getField('ae-pass');if(!name||!email){toast('Name and email required','error');return}if(!pass){toast('Password required','error');return}if(STATE.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Employee already exists','error');return}const emp={id:genId('E'),name,email,password:pass,role:getField('ae-role')||'sales',team:getField('ae-team'),phone:getField('ae-phone'),color:getField('ae-color')||'#1a2455',status:'active'};STATE.employees.push(emp);await gsPost({action:'appendEmployee',row:employeeToRow(emp)});populateLoginSelect();closeModal('add-emp-modal');toast('✅ Employee added: '+name,'success');renderAdmin();renderSalesCards();renderSocialCards()}
 async function deleteEmployee(id){if(!isAdmin()){toast('Admin only','error');return}confirmDialog('Remove Employee','This employee will be removed.',async()=>{STATE.employees=STATE.employees.filter(e=>e.id!==id);await gsPost({action:'deleteEmployee',id});populateLoginSelect();renderAdmin();renderSalesCards();renderSocialCards();toast('Employee removed','error')},'👤')}
@@ -1995,35 +2000,43 @@ function renderRecruiters(){
     const contacted=STATE.recruiters.filter(r=>r.contactStatus==='contacted').length;
     const pending=STATE.recruiters.length-contacted;
     kpi.innerHTML=[
-      {label:'إجمالي المرشحين',val:STATE.recruiters.length,color:'var(--blue)'},
-      {label:'النهارده',val:todayCount,color:'var(--gold)'},
-      {label:'تم التواصل',val:contacted,color:'var(--green)'},
-      {label:'لم يتم التواصل',val:pending,color:'var(--amber)'},
-    ].map(k=>`<div class="kpi-card"><div class="kpi-glow" style="background:${k.color}"></div><div class="kpi-label">${k.label}</div><div class="kpi-value" style="color:${k.color};font-size:28px">${k.val}</div></div>`).join('');
+      {label:'إجمالي المرشحين',val:STATE.recruiters.length,color:'var(--blue)',icon:'👥'},
+      {label:'النهارده',val:todayCount,color:'var(--gold)',icon:'📅'},
+      {label:'تم التواصل',val:contacted,color:'var(--green)',icon:'✅'},
+      {label:'لم يتم التواصل',val:pending,color:'var(--amber)',icon:'⏳'},
+    ].map(k=>`<div class="kpi-card"><div class="kpi-glow" style="background:${k.color}"></div><div class="kpi-icon">${k.icon}</div><div class="kpi-label">${k.label}</div><div class="kpi-value" style="color:${k.color};font-size:28px">${k.val}</div></div>`).join('');
   }
-  const tbody=document.getElementById('rec-tbody');
+  const container=document.getElementById('rec-card-list');
   const empty=document.getElementById('rec-empty');
-  if(!tbody)return;
-  if(!list.length){tbody.innerHTML='';if(empty)empty.style.display='block';return}
+  if(!container)return;
+  if(!list.length){container.innerHTML='';if(empty)empty.style.display='block';return}
   if(empty)empty.style.display='none';
-  const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-contacted','Fluent':'tag-interested'};
-  const qualColor={'High School':'tag-noresponse','Diploma':'tag-contacted','Bachelor':'tag-interested','Master':'tag-followup','PhD':'tag-won'};
-  tbody.innerHTML=list.map(r=>{
+  const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-active','Fluent':'tag-won'};
+  container.innerHTML=list.map(r=>{
     const isContacted=r.contactStatus==='contacted';
-    return`<tr>
-      <td style="font-weight:700;color:var(--text)">${r.name}</td>
-      <td><a href="tel:${r.phone}" style="color:var(--blue);text-decoration:none;font-family:'DM Mono',monospace;font-size:11px">${r.phone}</a></td>
-      <td style="color:var(--text2)">${r.job||'—'}</td>
-      <td>${r.english?`<span class="tag ${engColor[r.english]||'tag-noresponse'}">${r.english}</span>`:'—'}</td>
-      <td>${r.qualification?`<span class="tag ${qualColor[r.qualification]||'tag-noresponse'}">${r.qualification}</span>`:'—'}</td>
-      <td style="color:var(--text3);font-size:11px">${fmtDate(r.added)}</td>
-      <td>${isContacted?`<span class="tag tag-active">✅ تم التواصل</span>`:`<span class="tag tag-pending">⏳ لم يتم التواصل</span>`}</td>
-      <td style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-        <button class="btn btn-xs btn-blue" onclick="openEditRecruiter('${r.id}')">✏️ تعديل</button>
-        <button class="btn btn-xs ${isContacted?'btn-outline':'btn-success'}" onclick="toggleRecContact('${r.id}')">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
-        <button class="btn btn-xs btn-danger" onclick="deleteRecruiter('${r.id}')">🗑️</button>
-      </td>
-    </tr>`;
+    const initial=r.name.trim().charAt(0).toUpperCase();
+    return`<div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid ${isContacted?'rgba(0,229,160,.22)':'var(--border)'};border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--navy3),var(--navy2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--gold);flex-shrink:0;border:1px solid rgba(245,166,35,.2)">${initial}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
+          <a href="tel:${r.phone}" style="font-size:11px;color:var(--blue);text-decoration:none;font-family:'DM Mono',monospace">${r.phone}</a>
+        </div>
+        <div style="flex-shrink:0">${isContacted?'<span class="tag tag-active" style="font-size:9px;white-space:nowrap">✅ تواصلنا</span>':'<span class="tag tag-pending" style="font-size:9px;white-space:nowrap">⏳ لم يتم</span>'}</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">
+        ${r.job?`<span class="tag tag-noresponse" style="font-size:9px">💼 ${r.job}</span>`:''}
+        ${r.english?`<span class="tag ${engColor[r.english]||'tag-noresponse'}" style="font-size:9px">🇬🇧 ${r.english}</span>`:''}
+        ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.qualification}</span>`:''}
+      </div>
+      ${r.notes?`<div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(245,166,35,.3)">📝 ${r.notes}</div>`:''}
+      <div style="font-size:10px;color:var(--text3)">📅 ${fmtDate(r.added)}</div>
+      <div style="display:flex;gap:5px">
+        <button class="btn btn-blue btn-xs" onclick="openEditRecruiter('${r.id}')" style="flex:1;justify-content:center">✏️ تعديل</button>
+        <button class="btn btn-xs ${isContacted?'btn-outline':'btn-success'}" onclick="toggleRecContact('${r.id}')" style="flex:1;justify-content:center">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteRecruiter('${r.id}')" style="padding:5px 8px">🗑️</button>
+      </div>
+    </div>`;
   }).join('');
 }
 function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-job','rec-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}

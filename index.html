@@ -666,6 +666,19 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="syncNow()">🔄</button><button class="btn btn-gold btn-sm" onclick="openRecModal()">+ إضافة مرشح</button></div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+          <select id="rec-f-job" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
+            <option value="">💼 كل الوظائف</option>
+            <option value="محاسب">محاسب</option>
+            <option value="مهندس جودة">مهندس جودة</option>
+            <option value="مهندس إنتاج">مهندس إنتاج</option>
+            <option value="مبيعات">مبيعات</option>
+            <option value="جرافيك">جرافيك</option>
+            <option value="سوشيال ميديا">سوشيال ميديا</option>
+            <option value="عمال نظافة">عمال نظافة</option>
+            <option value="عمال إنتاج">عمال إنتاج</option>
+            <option value="عمال مخازن">عمال مخازن</option>
+            <option value="مهندس سلامة وصحة مهنية">مهندس سلامة وصحة مهنية</option>
+          </select>
           <select id="rec-f-date" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
             <option value="">📅 كل الأيام</option>
             <option value="today">النهارده</option>
@@ -840,8 +853,26 @@ body:not(.is-admin) .admin-only-card{display:none!important}
     <div class="modal-header"><div class="modal-title">👥 إضافة مرشح جديد</div><button class="modal-close" onclick="closeModal('rec-modal')">✕</button></div>
     <div class="form-grid">
       <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-name" placeholder="أحمد محمد"></div>
-      <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
-      <div class="field"><label>الوظيفة المطلوبة <span class="req">*</span></label><input id="rec-job" placeholder="Sales Rep, Accountant..."></div>
+      <div class="field"><label>رقم التواصل <span class="req">*</span></label><input id="rec-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
+      <div class="field"><label>الوظيفة المطلوبة <span class="req">*</span></label>
+        <select id="rec-job" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+          <option value="">-- اختر الوظيفة --</option>
+          <option value="محاسب">محاسب</option>
+          <option value="مهندس جودة">مهندس جودة</option>
+          <option value="مهندس إنتاج">مهندس إنتاج</option>
+          <option value="مبيعات">مبيعات</option>
+          <option value="جرافيك">جرافيك</option>
+          <option value="سوشيال ميديا">سوشيال ميديا</option>
+          <option value="عمال نظافة">عمال نظافة</option>
+          <option value="عمال إنتاج">عمال إنتاج</option>
+          <option value="عمال مخازن">عمال مخازن</option>
+          <option value="مهندس سلامة وصحة مهنية">مهندس سلامة وصحة مهنية</option>
+        </select>
+      </div>
+      <div class="field"><label>سنين الخبرة</label><input id="rec-exp" type="number" min="0" placeholder="0" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+      <div class="field"><label>المحافظة</label><input id="rec-gov" placeholder="القاهرة، الجيزة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+      <div class="field"><label>سنة التخرج</label><input id="rec-gradyear" type="number" min="1980" max="2030" placeholder="2020" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+      <div class="field"><label>الكلية</label><input id="rec-college" placeholder="كلية التجارة، الهندسة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
       <div class="field"><label>مستوى الإنجليزي</label>
         <select id="rec-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
           <option value="">-- اختر --</option>
@@ -861,7 +892,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <option value="PhD">دكتوراه</option>
         </select>
       </div>
-      <div class="field"><label>ملاحظات</label><input id="rec-notes" placeholder="أي ملاحظات إضافية..."></div>
+      <div class="field form-full"><label>ملاحظات</label><input id="rec-notes" placeholder="أي ملاحظات إضافية..."></div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveRecruiter()">✅ حفظ المرشح</button></div>
   </div>
@@ -881,8 +912,26 @@ body:not(.is-admin) .admin-only-card{display:none!important}
     <div id="rec-tab-info">
       <div class="form-grid">
         <div class="field"><label>الاسم الكامل <span class="req">*</span></label><input id="rec-edit-name" placeholder="أحمد محمد"></div>
-        <div class="field"><label>رقم التليفون <span class="req">*</span></label><input id="rec-edit-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
-        <div class="field"><label>الوظيفة المطلوبة</label><input id="rec-edit-job" placeholder="Sales Rep, Accountant..."></div>
+        <div class="field"><label>رقم التواصل <span class="req">*</span></label><input id="rec-edit-phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX"></div>
+        <div class="field"><label>الوظيفة المطلوبة</label>
+          <select id="rec-edit-job" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
+            <option value="">-- اختر الوظيفة --</option>
+            <option value="محاسب">محاسب</option>
+            <option value="مهندس جودة">مهندس جودة</option>
+            <option value="مهندس إنتاج">مهندس إنتاج</option>
+            <option value="مبيعات">مبيعات</option>
+            <option value="جرافيك">جرافيك</option>
+            <option value="سوشيال ميديا">سوشيال ميديا</option>
+            <option value="عمال نظافة">عمال نظافة</option>
+            <option value="عمال إنتاج">عمال إنتاج</option>
+            <option value="عمال مخازن">عمال مخازن</option>
+            <option value="مهندس سلامة وصحة مهنية">مهندس سلامة وصحة مهنية</option>
+          </select>
+        </div>
+        <div class="field"><label>سنين الخبرة</label><input id="rec-edit-exp" type="number" min="0" placeholder="0" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+        <div class="field"><label>المحافظة</label><input id="rec-edit-gov" placeholder="القاهرة، الجيزة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+        <div class="field"><label>سنة التخرج</label><input id="rec-edit-gradyear" type="number" min="1980" max="2030" placeholder="2020" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
+        <div class="field"><label>الكلية</label><input id="rec-edit-college" placeholder="كلية التجارة، الهندسة..." style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit"></div>
         <div class="field"><label>مستوى الإنجليزي</label>
           <select id="rec-edit-english" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;font-size:13px;color:var(--text);width:100%;outline:none;font-family:inherit">
             <option value="">-- اختر --</option>
@@ -908,7 +957,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
             <option value="contacted">✅ تم التواصل</option>
           </select>
         </div>
-        <div class="field"><label>ملاحظات</label><input id="rec-edit-notes" placeholder="أي ملاحظات إضافية..."></div>
+        <div class="field form-full"><label>ملاحظات</label><input id="rec-edit-notes" placeholder="أي ملاحظات إضافية..."></div>
       </div>
       <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('rec-edit-modal')">إلغاء</button><button class="btn btn-gold" onclick="saveEditRecruiter()">✅ حفظ التعديلات</button></div>
     </div>
@@ -2031,7 +2080,8 @@ function getFilteredRecruiters(){
   const fs=document.getElementById('rec-f-status')?.value||'';
   const fe=document.getElementById('rec-f-english')?.value||'';
   const fq=document.getElementById('rec-f-qual')?.value||'';
-  return STATE.recruiters.filter(r=>(!fd||recDateFilter(r.added,fd))&&(!fs||r.contactStatus===fs)&&(!fe||r.english===fe)&&(!fq||r.qualification===fq));
+  const fj=document.getElementById('rec-f-job')?.value||'';
+  return STATE.recruiters.filter(r=>(!fd||recDateFilter(r.added,fd))&&(!fs||r.contactStatus===fs)&&(!fe||r.english===fe)&&(!fq||r.qualification===fq)&&(!fj||r.job===fj));
 }
 function renderRecruiters(){
   const list=getFilteredRecruiters();
@@ -2069,8 +2119,12 @@ function renderRecruiters(){
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:4px">
         ${r.job?`<span class="tag tag-noresponse" style="font-size:9px">💼 ${r.job}</span>`:''}
+        ${r.experience?`<span class="tag tag-blue" style="font-size:9px">⏱ ${r.experience} سنة خبرة</span>`:''}
+        ${r.governorate?`<span class="tag tag-followup" style="font-size:9px">📍 ${r.governorate}</span>`:''}
+        ${r.gradYear?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.gradYear}</span>`:''}
+        ${r.college?`<span class="tag tag-noresponse" style="font-size:9px">🏛 ${r.college}</span>`:''}
         ${r.english?`<span class="tag ${engColor[r.english]||'tag-noresponse'}" style="font-size:9px">🇬🇧 ${r.english}</span>`:''}
-        ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.qualification}</span>`:''}
+        ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">📜 ${r.qualification}</span>`:''}
       </div>
       ${r.notes?`<div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(245,166,35,.3)">📝 ${r.notes}</div>`:''}
       ${r.cvUrl?`<a href="https://docs.google.com/viewer?url=${encodeURIComponent(r.cvUrl)}&embedded=false" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);text-decoration:none;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:20px;padding:3px 10px">📄 CV متاح — فتح</a>`:'<span style="font-size:10px;color:var(--text3)">📄 لا يوجد CV</span>'}
@@ -2083,7 +2137,7 @@ function renderRecruiters(){
     </div>`;
   }).join('');
 }
-function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-job','rec-notes'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
+function openRecModal(){openModal('rec-modal');['rec-name','rec-phone','rec-notes','rec-gov','rec-college'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-english','rec-qual','rec-job'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});['rec-exp','rec-gradyear'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''})}
 function switchRecTab(tab){
   ['info','cv'].forEach(t=>{
     const panel=document.getElementById('rec-tab-'+t);
@@ -2169,6 +2223,10 @@ function openEditRecruiter(id){
   document.getElementById('rec-edit-qual').value=r.qualification||'';
   document.getElementById('rec-edit-status').value=r.contactStatus||'pending';
   document.getElementById('rec-edit-notes').value=r.notes||'';
+  document.getElementById('rec-edit-exp').value=r.experience||'';
+  document.getElementById('rec-edit-gov').value=r.governorate||'';
+  document.getElementById('rec-edit-gradyear').value=r.gradYear||'';
+  document.getElementById('rec-edit-college').value=r.college||'';
   switchRecTab('info');
   openModal('rec-edit-modal');
 }
@@ -2185,25 +2243,29 @@ async function saveEditRecruiter(){
   r.qualification=document.getElementById('rec-edit-qual')?.value||'';
   r.contactStatus=document.getElementById('rec-edit-status')?.value||'pending';
   r.notes=document.getElementById('rec-edit-notes')?.value||'';
+  r.experience=document.getElementById('rec-edit-exp')?.value||'';
+  r.governorate=(document.getElementById('rec-edit-gov')?.value||'').trim();
+  r.gradYear=document.getElementById('rec-edit-gradyear')?.value||'';
+  r.college=(document.getElementById('rec-edit-college')?.value||'').trim();
   LS.set('recruiters',STATE.recruiters);
   closeModal('rec-edit-modal');
   toast('Saving...','');
-  await gsPostRec({action:'updateRecruiterRow',id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added]});
+  await gsPostRec({action:'updateRecruiterRow',id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl||'',r.cvName||'',r.experience,r.governorate,r.gradYear,r.college,r.notes]});
   toast('✅ تم التعديل','success');
   renderRecruiters();
 }
 async function saveRecruiter(){
   const name=(document.getElementById('rec-name')?.value||'').trim();
   const phone=(document.getElementById('rec-phone')?.value||'').trim();
-  const job=(document.getElementById('rec-job')?.value||'').trim();
+  const job=document.getElementById('rec-job')?.value||'';
   if(!name){toast('الاسم مطلوب','error');return}
   if(!phone){toast('التليفون مطلوب','error');return}
-  const rec={id:genId('RC'),name,phone,job,english:document.getElementById('rec-english')?.value||'',qualification:document.getElementById('rec-qual')?.value||'',notes:(document.getElementById('rec-notes')?.value||'').trim(),contactStatus:'pending',addedBy:SESSION.user||'',added:new Date().toISOString()};
+  const rec={id:genId('RC'),name,phone,job,english:document.getElementById('rec-english')?.value||'',qualification:document.getElementById('rec-qual')?.value||'',notes:(document.getElementById('rec-notes')?.value||'').trim(),experience:document.getElementById('rec-exp')?.value||'',governorate:(document.getElementById('rec-gov')?.value||'').trim(),gradYear:document.getElementById('rec-gradyear')?.value||'',college:(document.getElementById('rec-college')?.value||'').trim(),contactStatus:'pending',addedBy:SESSION.user||'',added:new Date().toISOString()};
   STATE.recruiters.unshift(rec);
   LS.set('recruiters',STATE.recruiters);
   closeModal('rec-modal');
   toast('Saving...','');
-  await gsPostRec({action:'appendRecruiter',row:[rec.id,rec.name,rec.phone,rec.job,rec.english,rec.qualification,rec.contactStatus,rec.addedBy,rec.added]});
+  await gsPostRec({action:'appendRecruiter',row:[rec.id,rec.name,rec.phone,rec.job,rec.english,rec.qualification,rec.contactStatus,rec.addedBy,rec.added,rec.experience,rec.governorate,rec.gradYear,rec.college,rec.notes]});
   toast('✅ تم حفظ المرشح: '+name,'success');
   renderRecruiters();
 }
@@ -2223,7 +2285,7 @@ function deleteRecruiter(id){
     renderRecruiters();
   },'🗑️');
 }
-function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-qual'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});renderRecruiters()}
+function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-qual','rec-f-job'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});renderRecruiters()}
 
 // ═══ INIT ═══
 async function init() {

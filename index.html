@@ -1054,7 +1054,7 @@ body:not(.is-admin) .admin-only-card{display:none!important}
         <div style="font-size:36px;margin-bottom:10px">📄</div>
         <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px">اسحب الـ CV هنا أو اضغط للاختيار</div>
         <div style="font-size:11px;color:var(--text3)">PDF, DOC, DOCX — حجم أقصى 10MB</div>
-        <input type="file" id="rec-cv-file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="uploadCvToCloudinary(this.files[0])">
+        <input type="file" id="rec-cv-file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="uploadCvToDrive(this.files[0])">
       </div>
       <!-- progress -->
       <div id="rec-cv-progress" style="display:none;margin-top:14px">
@@ -1243,8 +1243,8 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
 <script>
 // ═══ CONFIG ═══
-const GS_URL='https://script.google.com/macros/s/AKfycbx8MwbEr_EM9ZnOo5ziddAcgONurXP7r6UCj0EIQAFd5veNUtzNPEMxTx-fYb5gwTiZ/exec';
-const REC_URL='https://script.google.com/macros/s/AKfycbx8MwbEr_EM9ZnOo5ziddAcgONurXP7r6UCj0EIQAFd5veNUtzNPEMxTx-fYb5gwTiZ/exec';
+const GS_URL='https://script.google.com/macros/s/AKfycbxAXvQr2kKKxc_HCc_u_je6Rzs5B8IaGcxutXsUc2oKtQTQNthW996xtoNG4V0tpcec/exec';
+const REC_URL='https://script.google.com/macros/s/AKfycbxAXvQr2kKKxc_HCc_u_je6Rzs5B8IaGcxutXsUc2oKtQTQNthW996xtoNG4V0tpcec/exec';
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
@@ -2260,24 +2260,25 @@ function switchRecTab(tab){
 function fixCvUrl(url){if(!url)return url;return url.replace('/image/upload/','/raw/upload/').replace('/video/upload/','/raw/upload/');}
 function getCvDownloadUrl(url){
   if(!url)return url;
+  // Google Drive: convert to direct download
+  const driveMatch=url.match(/\/file\/d\/([^/]+)/);
+  if(driveMatch)return 'https://drive.google.com/uc?export=download&id='+driveMatch[1];
   return fixCvUrl(url).replace('/raw/upload/','/raw/upload/fl_attachment/');
 }
-function getCvViewUrl(url){return fixCvUrl(url);}
+function getCvViewUrl(url){
+  if(!url)return url;
+  // Google Drive: convert to preview link (opens inline)
+  const driveMatch=url.match(/\/file\/d\/([^/]+)/);
+  if(driveMatch)return 'https://drive.google.com/file/d/'+driveMatch[1]+'/preview';
+  return fixCvUrl(url);
+}
 let _cvViewerTimer=null;
 function cvFrameLoaded(){
   clearTimeout(_cvViewerTimer);
-  const fr=document.getElementById('cv-viewer-frame');
   const loading=document.getElementById('cv-viewer-loading');
-  const err=document.getElementById('cv-viewer-error');
-  // If frame src is empty or about:blank it fires onload too — ignore
-  if(!fr||!fr.src||fr.src==='about:blank')return;
-  try{
-    // Try accessing frame content — if CORS blocked it throws
-    const doc=fr.contentDocument||fr.contentWindow.document;
-    if(doc&&doc.body&&doc.body.innerHTML===''){cvFrameError();return;}
-  }catch(e){}
+  const frame=document.getElementById('cv-viewer-frame');
+  if(!frame||!frame.src||frame.src==='about:blank')return;
   if(loading)loading.style.display='none';
-  if(err)err.style.display='none';
 }
 function cvFrameError(){
   clearTimeout(_cvViewerTimer);
@@ -2287,10 +2288,8 @@ function cvFrameError(){
   if(err)err.style.display='flex';
 }
 function openCvViewer(url,name){
-  const raw=fixCvUrl(url);
+  const viewUrl=getCvViewUrl(url);
   const dlUrl=getCvDownloadUrl(url);
-  // Try 3 viewers in sequence: direct → PDF.js CDN → MS Office Online
-  const pdfjs='https://mozilla.github.io/pdf.js/web/viewer.html?file='+encodeURIComponent(raw);
   const frame=document.getElementById('cv-viewer-frame');
   const loading=document.getElementById('cv-viewer-loading');
   const err=document.getElementById('cv-viewer-error');
@@ -2298,18 +2297,15 @@ function openCvViewer(url,name){
   const dlBtn=document.getElementById('cv-viewer-download');
   const errDl=document.getElementById('cv-viewer-error-dl');
   if(title)title.textContent='📄 '+(name||'CV');
-  if(dlBtn){dlBtn.href=dlUrl;}
-  if(errDl){errDl.href=dlUrl;}
+  if(dlBtn)dlBtn.href=dlUrl;
+  if(errDl)errDl.href=dlUrl;
   if(loading)loading.style.display='flex';
   if(err)err.style.display='none';
   if(frame){
     frame.src='';
     setTimeout(()=>{
-      frame.src=pdfjs;
-      // Fallback: if still loading after 8s → show error with download
-      _cvViewerTimer=setTimeout(()=>{
-        cvFrameError();
-      },8000);
+      frame.src=viewUrl;
+      _cvViewerTimer=setTimeout(()=>cvFrameError(),12000);
     },100);
   }
   openModal('cv-viewer-modal');
@@ -2332,8 +2328,8 @@ function renderCvCurrent(r){
     el.innerHTML=`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--text3);text-align:center;margin-bottom:12px">لا يوجد CV مرفوع بعد</div>`;
   }
 }
-function handleCvDrop(event){const file=event.dataTransfer.files[0];if(file)uploadCvToCloudinary(file);}
-async function uploadCvToCloudinary(file){
+function handleCvDrop(event){const file=event.dataTransfer.files[0];if(file)uploadCvToDrive(file);}
+async function uploadCvToDrive(file){
   if(!file)return;
   if(file.size>10*1024*1024){toast('الملف كبير — الحد 10MB','error');return}
   const id=document.getElementById('rec-edit-id').value;
@@ -2345,32 +2341,49 @@ async function uploadCvToCloudinary(file){
   const area=document.getElementById('rec-cv-upload-area');
   if(prog)prog.style.display='block';
   if(area)area.style.pointerEvents='none';
-  const formData=new FormData();
-  formData.append('file',file);
-  formData.append('upload_preset','egygulf_unsigned');
-  const xhr=new XMLHttpRequest();
-  xhr.upload.onprogress=e=>{
-    if(e.lengthComputable){const p=Math.round(e.loaded/e.total*100);if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';if(lbl)lbl.textContent=p<100?'جاري الرفع...':'جاري المعالجة...';}
-  };
-  xhr.onload=async()=>{
-    if(area)area.style.pointerEvents='';
-    if(prog)prog.style.display='none';
-    if(bar)bar.style.width='0%';
-    if(xhr.status===200){
-      const res=JSON.parse(xhr.responseText);
-      r.cvUrl=res.secure_url;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
+  if(lbl)lbl.textContent='جاري تحضير الملف...';
+  if(bar)bar.style.width='10%';if(pct)pct.textContent='10%';
+  try{
+    // تحويل الملف لـ base64
+    const base64=await new Promise((res,rej)=>{
+      const reader=new FileReader();
+      reader.onload=()=>res(reader.result.split(',')[1]);
+      reader.onerror=()=>rej(new Error('فشل قراءة الملف'));
+      reader.readAsDataURL(file);
+    });
+    if(lbl)lbl.textContent='جاري الرفع على Google Drive...';
+    if(bar)bar.style.width='50%';if(pct)pct.textContent='50%';
+    // بعت للـ Apps Script
+    const resp=await fetch(REC_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        action:'uploadCvToDrive',
+        recruiterId:r.id,
+        fileName:file.name,
+        mimeType:file.type||'application/pdf',
+        base64Data:base64
+      })
+    });
+    if(bar)bar.style.width='90%';if(pct)pct.textContent='90%';
+    const result=await resp.json();
+    if(result.ok&&result.url){
+      if(bar)bar.style.width='100%';if(pct)pct.textContent='100%';
+      if(lbl)lbl.textContent='تم!';
+      r.cvUrl=result.url;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
       LS.set('recruiters',STATE.recruiters);
-      toast('✅ تم رفع الـ CV بنجاح','success');
+      toast('✅ تم رفع الـ CV على Google Drive','success');
       renderCvCurrent(r);renderRecruiters();
       await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl,r.cvName]});
     } else {
-      try{const err=JSON.parse(xhr.responseText);toast('❌ '+( err.error?.message||'فشل الرفع'),'error');}
-      catch{toast('فشل الرفع — status: '+xhr.status,'error');}
+      throw new Error(result.error||'فشل الرفع');
     }
-  };
-  xhr.onerror=()=>{if(area)area.style.pointerEvents='';if(prog)prog.style.display='none';toast('خطأ في الاتصال','error');};
-  xhr.open('POST','https://api.cloudinary.com/v1_1/dffltsgoh/raw/upload');
-  xhr.send(formData);
+  }catch(err){
+    toast('❌ '+err.message,'error');
+  }finally{
+    if(area)area.style.pointerEvents='';
+    setTimeout(()=>{if(prog)prog.style.display='none';if(bar)bar.style.width='0%';},800);
+  }
 }
 async function deleteCv(id){
   const r=STATE.recruiters.find(x=>x.id===id);if(!r)return;

@@ -1243,8 +1243,8 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
 <script>
 // ═══ CONFIG ═══
-const GS_URL='https://script.google.com/macros/s/AKfycbxAXvQr2kKKxc_HCc_u_je6Rzs5B8IaGcxutXsUc2oKtQTQNthW996xtoNG4V0tpcec/exec';
-const REC_URL='https://script.google.com/macros/s/AKfycbxAXvQr2kKKxc_HCc_u_je6Rzs5B8IaGcxutXsUc2oKtQTQNthW996xtoNG4V0tpcec/exec';
+const GS_URL='https://script.google.com/macros/s/AKfycbz61p4yLR73UAKQxjXty4TyJyIfKwpohn9S23vg33Ae359QIbWUGBTBK_GeRpAVINja/exec';
+const REC_URL='https://script.google.com/macros/s/AKfycbz61p4yLR73UAKQxjXty4TyJyIfKwpohn9S23vg33Ae359QIbWUGBTBK_GeRpAVINja/exec';
 const ADMIN_CODE='EgyGulf2024';
 
 // ═══ STATE ═══
@@ -2352,31 +2352,33 @@ async function uploadCvToDrive(file){
       reader.readAsDataURL(file);
     });
     if(lbl)lbl.textContent='جاري الرفع على Google Drive...';
-    if(bar)bar.style.width='50%';if(pct)pct.textContent='50%';
-    // بعت للـ Apps Script
-    const resp=await fetch(REC_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        action:'uploadCvToDrive',
-        recruiterId:r.id,
-        fileName:file.name,
-        mimeType:file.type||'application/pdf',
-        base64Data:base64
-      })
+    if(bar)bar.style.width='40%';if(pct)pct.textContent='40%';
+    // JSONP via script tag — الطريقة الوحيدة مع Apps Script بدون CORS
+    const cbName='cvCb_'+Date.now();
+    const result=await new Promise((res,rej)=>{
+      const timer=setTimeout(()=>{delete window[cbName];rej(new Error('انتهى الوقت'));},90000);
+      window[cbName]=function(data){clearTimeout(timer);delete window[cbName];res(data);};
+      const sc=document.createElement('script');
+      sc.src=REC_URL+'?action=uploadCvToDrive'
+        +'&recruiterId='+encodeURIComponent(r.id)
+        +'&fileName='+encodeURIComponent(file.name)
+        +'&mimeType='+encodeURIComponent(file.type||'application/pdf')
+        +'&base64Data='+encodeURIComponent(base64)
+        +'&callback='+cbName;
+      sc.onerror=()=>{clearTimeout(timer);delete window[cbName];rej(new Error('فشل الاتصال بالسيرفر'));};
+      sc.onload=()=>sc.remove();
+      document.head.appendChild(sc);
     });
-    if(bar)bar.style.width='90%';if(pct)pct.textContent='90%';
-    const result=await resp.json();
-    if(result.ok&&result.url){
-      if(bar)bar.style.width='100%';if(pct)pct.textContent='100%';
-      if(lbl)lbl.textContent='تم!';
+    if(bar)bar.style.width='100%';if(pct)pct.textContent='100%';
+    if(lbl)lbl.textContent='تم!';
+    if(result&&result.url){
       r.cvUrl=result.url;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
       LS.set('recruiters',STATE.recruiters);
       toast('✅ تم رفع الـ CV على Google Drive','success');
       renderCvCurrent(r);renderRecruiters();
       await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl,r.cvName]});
     } else {
-      throw new Error(result.error||'فشل الرفع');
+      throw new Error(result&&result.error?result.error:'فشل الرفع');
     }
   }catch(err){
     toast('❌ '+err.message,'error');

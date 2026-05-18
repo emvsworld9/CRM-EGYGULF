@@ -430,6 +430,74 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 }
 @media print{html,body{height:auto;overflow:visible}body>*:not(#print-root){display:none!important}#print-root{display:block!important;position:static;width:100%;background:#fff;color:#000}}
 #print-root{display:none}
+
+/* ═══ RECRUITERS ENHANCED UI ═══ */
+.rec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.rec-header-left{}
+.rec-header-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.rec-header-count{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.rec-header-count span{color:var(--gold);font-weight:700;font-family:'Syne',sans-serif}
+.rec-header-actions{display:flex;gap:8px}
+.rec-sync-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.rec-sync-btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.2)}
+.rec-add-btn{height:36px;padding:0 16px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#d4750a);color:var(--navy);font-family:'Syne',sans-serif;font-size:12px;font-weight:800;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 4px 16px rgba(245,166,35,.3);transition:all .2s;letter-spacing:.02em}
+.rec-add-btn:hover{box-shadow:0 6px 22px rgba(245,166,35,.45);transform:translateY(-1px)}
+.rec-add-btn:active{transform:scale(.96)}
+
+/* Filter pills */
+.rec-filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.rec-filter-select{position:relative;flex-shrink:0}
+.rec-filter-select select{appearance:none;-webkit-appearance:none;background:rgba(14,20,58,.8);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 30px 7px 13px;font-size:11.5px;font-weight:600;color:var(--text2);cursor:pointer;outline:none;font-family:inherit;transition:all .2s;backdrop-filter:blur(8px)}
+.rec-filter-select select:hover{border-color:rgba(245,166,35,.35);background:rgba(20,29,79,.85);color:var(--text)}
+.rec-filter-select select:focus{border-color:rgba(245,166,35,.5);color:var(--text);box-shadow:0 0 0 3px rgba(245,166,35,.08)}
+.rec-filter-select select option{background:#0d1440;color:var(--text)}
+.rec-filter-select::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;color:var(--text3);pointer-events:none}
+.rec-filter-active select{background:rgba(245,166,35,.12)!important;border-color:rgba(245,166,35,.4)!important;color:var(--gold)!important}
+.rec-clear-btn{height:32px;padding:0 12px;border-radius:20px;background:rgba(255,61,104,.08);border:1px solid rgba(255,61,104,.2);color:var(--red);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;flex-shrink:0}
+.rec-clear-btn:hover{background:rgba(255,61,104,.16)}
+
+/* Recruiter card redesign */
+.rec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.rec-grid{grid-template-columns:1fr}}
+.rc{background:linear-gradient(145deg,rgba(255,255,255,.058),rgba(255,255,255,.018));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;transition:border-color .25s,transform .2s,box-shadow .25s;position:relative;overflow:hidden}
+.rc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)}
+.rc:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.rc.contacted{border-color:rgba(0,229,160,.2);background:linear-gradient(145deg,rgba(0,229,160,.04),rgba(255,255,255,.015))}
+.rc.contacted::before{background:linear-gradient(90deg,transparent,rgba(0,229,160,.3),transparent)}
+.rc-top{display:flex;align-items:flex-start;gap:11px}
+.rc-avatar{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--navy3),var(--navy2));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--gold);flex-shrink:0;border:1px solid rgba(245,166,35,.18);font-family:'Syne',sans-serif}
+.rc-info{flex:1;min-width:0}
+.rc-name{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Syne',sans-serif}
+.rc-phone{font-size:11px;color:var(--blue);text-decoration:none;font-family:'DM Mono',monospace;display:flex;align-items:center;gap:4px;transition:color .15s}
+.rc-phone:hover{color:var(--gold)}
+.rc-status{flex-shrink:0}
+.rc-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:20px;font-size:9.5px;font-weight:700;white-space:nowrap}
+.rc-badge.contacted{background:rgba(0,229,160,.12);color:var(--green);border:1px solid rgba(0,229,160,.25)}
+.rc-badge.pending{background:rgba(255,176,32,.1);color:var(--amber);border:1px solid rgba(255,176,32,.22)}
+.rc-job-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:10px;font-size:11px;font-weight:700;background:linear-gradient(135deg,rgba(61,142,255,.14),rgba(61,142,255,.06));border:1px solid rgba(61,142,255,.22);color:#6aabff;width:100%}
+.rc-tags{display:flex;flex-wrap:wrap;gap:5px}
+.rc-tag{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:8px;font-size:10px;font-weight:600}
+.rc-tag-exp{background:rgba(157,120,255,.1);color:#b39dff;border:1px solid rgba(157,120,255,.2)}
+.rc-tag-gov{background:rgba(0,212,232,.08);color:#4dd9e8;border:1px solid rgba(0,212,232,.18)}
+.rc-tag-year{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid rgba(255,255,255,.09)}
+.rc-tag-college{background:rgba(245,166,35,.08);color:#d4a040;border:1px solid rgba(245,166,35,.15)}
+.rc-tag-eng{background:rgba(0,229,160,.09);color:#00c98a;border:1px solid rgba(0,229,160,.18)}
+.rc-tag-qual{background:rgba(255,255,255,.05);color:var(--text3);border:1px solid rgba(255,255,255,.08)}
+.rc-notes{font-size:11px;color:var(--text3);padding:7px 10px;background:rgba(255,255,255,.03);border-radius:8px;border-left:2px solid rgba(245,166,35,.3);line-height:1.4}
+.rc-meta{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.rc-actions{display:flex;gap:5px}
+.rc-btn{flex:1;height:32px;border-radius:9px;font-size:11px;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .18s;font-family:inherit}
+.rc-btn-edit{background:rgba(61,142,255,.1);color:var(--blue);border:1px solid rgba(61,142,255,.2)}
+.rc-btn-edit:hover{background:rgba(61,142,255,.18)}
+.rc-btn-contact{background:rgba(0,229,160,.1);color:var(--green);border:1px solid rgba(0,229,160,.2)}
+.rc-btn-contact:hover{background:rgba(0,229,160,.18)}
+.rc-btn-uncontact{background:rgba(255,255,255,.05);color:var(--text3);border:1px solid rgba(255,255,255,.09)}
+.rc-btn-uncontact:hover{background:rgba(255,255,255,.09)}
+.rc-btn-del{width:32px;flex:none;background:rgba(255,61,104,.08);color:var(--red);border:1px solid rgba(255,61,104,.15)}
+.rc-btn-del:hover{background:rgba(255,61,104,.16)}
+.rc-cv-link{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:8px;font-size:10px;font-weight:700;color:var(--green);background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.18);text-decoration:none;transition:all .15s}
+.rc-cv-link:hover{background:rgba(0,229,160,.13)}
+.rc-no-cv{font-size:10px;color:var(--text3)}
 </style>
 </head>
 <body>
@@ -661,55 +729,71 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 
       <!-- RECRUITERS -->
       <div class="page" id="page-recruiters">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-          <div><div class="section-title" style="margin-bottom:2px">👥 Recruiters</div><div style="font-size:11px;color:var(--text3)"><span id="rec-total">0</span> مرشح مسجل</div></div>
-          <div style="display:flex;gap:6px"><button class="btn btn-outline btn-sm" onclick="syncNow()">🔄</button><button class="btn btn-gold btn-sm" onclick="openRecModal()">+ إضافة مرشح</button></div>
+        <div class="rec-header">
+          <div class="rec-header-left">
+            <div class="rec-header-title">👥 Recruiters</div>
+            <div class="rec-header-count"><span id="rec-total">0</span> مرشح مسجل</div>
+          </div>
+          <div class="rec-header-actions">
+            <button class="rec-sync-btn" onclick="syncNow()" title="مزامنة">🔄</button>
+            <button class="rec-add-btn" onclick="openRecModal()">＋ إضافة مرشح</button>
+          </div>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
-          <select id="rec-f-job" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
-            <option value="">💼 كل الوظائف</option>
-            <option value="محاسب">محاسب</option>
-            <option value="مهندس جودة">مهندس جودة</option>
-            <option value="مهندس إنتاج">مهندس إنتاج</option>
-            <option value="مبيعات">مبيعات</option>
-            <option value="جرافيك">جرافيك</option>
-            <option value="سوشيال ميديا">سوشيال ميديا</option>
-            <option value="عمال نظافة">عمال نظافة</option>
-            <option value="عمال إنتاج">عمال إنتاج</option>
-            <option value="عمال مخازن">عمال مخازن</option>
-            <option value="مهندس سلامة وصحة مهنية">مهندس سلامة وصحة مهنية</option>
-          </select>
-          <select id="rec-f-date" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
-            <option value="">📅 كل الأيام</option>
-            <option value="today">النهارده</option>
-            <option value="yesterday">أمس</option>
-            <option value="week">الأسبوع</option>
-            <option value="month">الشهر</option>
-          </select>
-          <select id="rec-f-status" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
-            <option value="">كل الحالات</option>
-            <option value="pending">⏳ لم يتم التواصل</option>
-            <option value="contacted">✅ تم التواصل</option>
-          </select>
-          <select id="rec-f-english" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
-            <option value="">كل مستويات الإنجليزي</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-            <option value="Fluent">Fluent</option>
-          </select>
-          <select id="rec-f-qual" onchange="renderRecruiters()" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;font-size:12px;color:var(--text);outline:none;font-family:inherit">
-            <option value="">كل المؤهلات</option>
-            <option value="High School">ثانوية عامة</option>
-            <option value="Diploma">دبلوم</option>
-            <option value="Bachelor">بكالوريوس</option>
-            <option value="Master">ماجستير</option>
-            <option value="PhD">دكتوراه</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" onclick="clearRecFilters()">✕</button>
+        <div class="rec-filters">
+          <div class="rec-filter-select" id="wrap-rec-f-job">
+            <select id="rec-f-job" onchange="updateFilterStyle(this,'wrap-rec-f-job');renderRecruiters()">
+              <option value="">💼 كل الوظائف</option>
+              <option value="محاسب">محاسب</option>
+              <option value="مهندس جودة">مهندس جودة</option>
+              <option value="مهندس إنتاج">مهندس إنتاج</option>
+              <option value="مبيعات">مبيعات</option>
+              <option value="جرافيك">جرافيك</option>
+              <option value="سوشيال ميديا">سوشيال ميديا</option>
+              <option value="عمال نظافة">عمال نظافة</option>
+              <option value="عمال إنتاج">عمال إنتاج</option>
+              <option value="عمال مخازن">عمال مخازن</option>
+              <option value="مهندس سلامة وصحة مهنية">مهندس سلامة وصحة مهنية</option>
+            </select>
+          </div>
+          <div class="rec-filter-select" id="wrap-rec-f-date">
+            <select id="rec-f-date" onchange="updateFilterStyle(this,'wrap-rec-f-date');renderRecruiters()">
+              <option value="">📅 كل الأيام</option>
+              <option value="today">النهارده</option>
+              <option value="yesterday">أمس</option>
+              <option value="week">الأسبوع</option>
+              <option value="month">الشهر</option>
+            </select>
+          </div>
+          <div class="rec-filter-select" id="wrap-rec-f-status">
+            <select id="rec-f-status" onchange="updateFilterStyle(this,'wrap-rec-f-status');renderRecruiters()">
+              <option value="">كل الحالات</option>
+              <option value="pending">⏳ لم يتم التواصل</option>
+              <option value="contacted">✅ تم التواصل</option>
+            </select>
+          </div>
+          <div class="rec-filter-select" id="wrap-rec-f-english">
+            <select id="rec-f-english" onchange="updateFilterStyle(this,'wrap-rec-f-english');renderRecruiters()">
+              <option value="">🇬🇧 الإنجليزي</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Fluent">Fluent</option>
+            </select>
+          </div>
+          <div class="rec-filter-select" id="wrap-rec-f-qual">
+            <select id="rec-f-qual" onchange="updateFilterStyle(this,'wrap-rec-f-qual');renderRecruiters()">
+              <option value="">🎓 المؤهل</option>
+              <option value="High School">ثانوية عامة</option>
+              <option value="Diploma">دبلوم</option>
+              <option value="Bachelor">بكالوريوس</option>
+              <option value="Master">ماجستير</option>
+              <option value="PhD">دكتوراه</option>
+            </select>
+          </div>
+          <button class="rec-clear-btn" onclick="clearRecFilters()">✕ مسح</button>
         </div>
         <div class="kpi-grid" id="rec-kpi" style="margin-bottom:14px"></div>
-        <div id="rec-card-list" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+        <div id="rec-card-list" class="rec-grid"></div>
         <div id="rec-empty" style="display:none" class="table-empty">لا يوجد مرشحين في هذا الفلتر</div>
       </div>
 
@@ -2104,35 +2188,37 @@ function renderRecruiters(){
   if(!container)return;
   if(!list.length){container.innerHTML='';if(empty)empty.style.display='block';return}
   if(empty)empty.style.display='none';
-  const engColor={'Beginner':'tag-noresponse','Intermediate':'tag-followup','Advanced':'tag-active','Fluent':'tag-won'};
+  const engColor={'Beginner':'rc-tag-year','Intermediate':'rc-tag-exp','Advanced':'rc-tag-eng','Fluent':'rc-tag-eng'};
   container.innerHTML=list.map(r=>{
     const isContacted=r.contactStatus==='contacted';
     const initial=r.name.trim().charAt(0).toUpperCase();
-    return`<div style="background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid ${isContacted?'rgba(0,229,160,.22)':'var(--border)'};border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--navy3),var(--navy2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:var(--gold);flex-shrink:0;border:1px solid rgba(245,166,35,.2)">${initial}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.name}</div>
-          <a href="tel:${r.phone}" style="font-size:11px;color:var(--blue);text-decoration:none;font-family:'DM Mono',monospace">${r.phone}</a>
+    return`<div class="rc${isContacted?' contacted':''}">
+      <div class="rc-top">
+        <div class="rc-avatar">${initial}</div>
+        <div class="rc-info">
+          <div class="rc-name">${r.name}</div>
+          <a href="tel:${r.phone}" class="rc-phone">📞 ${r.phone}</a>
         </div>
-        <div style="flex-shrink:0">${isContacted?'<span class="tag tag-active" style="font-size:9px;white-space:nowrap">✅ تواصلنا</span>':'<span class="tag tag-pending" style="font-size:9px;white-space:nowrap">⏳ لم يتم</span>'}</div>
+        <div class="rc-status"><span class="rc-badge ${isContacted?'contacted':'pending'}">${isContacted?'✅ تواصلنا':'⏳ لم يتم'}</span></div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:4px">
-        ${r.job?`<span class="tag tag-noresponse" style="font-size:9px">💼 ${r.job}</span>`:''}
-        ${r.experience?`<span class="tag tag-blue" style="font-size:9px">⏱ ${r.experience} سنة خبرة</span>`:''}
-        ${r.governorate?`<span class="tag tag-followup" style="font-size:9px">📍 ${r.governorate}</span>`:''}
-        ${r.gradYear?`<span class="tag tag-noresponse" style="font-size:9px">🎓 ${r.gradYear}</span>`:''}
-        ${r.college?`<span class="tag tag-noresponse" style="font-size:9px">🏛 ${r.college}</span>`:''}
-        ${r.english?`<span class="tag ${engColor[r.english]||'tag-noresponse'}" style="font-size:9px">🇬🇧 ${r.english}</span>`:''}
-        ${r.qualification?`<span class="tag tag-noresponse" style="font-size:9px">📜 ${r.qualification}</span>`:''}
+      ${r.job?`<div class="rc-job-pill">💼 ${r.job}</div>`:''}
+      <div class="rc-tags">
+        ${r.experience?`<span class="rc-tag rc-tag-exp">⏱ ${r.experience} سنة</span>`:''}
+        ${r.governorate?`<span class="rc-tag rc-tag-gov">📍 ${r.governorate}</span>`:''}
+        ${r.gradYear?`<span class="rc-tag rc-tag-year">🎓 ${r.gradYear}</span>`:''}
+        ${r.college?`<span class="rc-tag rc-tag-college">🏛 ${r.college}</span>`:''}
+        ${r.english?`<span class="rc-tag ${engColor[r.english]||'rc-tag-year'}">🇬🇧 ${r.english}</span>`:''}
+        ${r.qualification?`<span class="rc-tag rc-tag-qual">📜 ${r.qualification}</span>`:''}
       </div>
-      ${r.notes?`<div style="font-size:11px;color:var(--text3);padding:6px 8px;background:rgba(255,255,255,.03);border-radius:6px;border-left:2px solid rgba(245,166,35,.3)">📝 ${r.notes}</div>`:''}
-      ${r.cvUrl?`<a href="https://docs.google.com/viewer?url=${encodeURIComponent(r.cvUrl)}&embedded=false" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);text-decoration:none;background:rgba(0,229,160,.07);border:1px solid rgba(0,229,160,.2);border-radius:20px;padding:3px 10px">📄 CV متاح — فتح</a>`:'<span style="font-size:10px;color:var(--text3)">📄 لا يوجد CV</span>'}
-      <div style="font-size:10px;color:var(--text3)">📅 ${fmtDate(r.added)}</div>
-      <div style="display:flex;gap:5px">
-        <button class="btn btn-blue btn-xs" onclick="openEditRecruiter('${r.id}')" style="flex:1;justify-content:center">✏️ تعديل</button>
-        <button class="btn btn-xs ${isContacted?'btn-outline':'btn-success'}" onclick="toggleRecContact('${r.id}')" style="flex:1;justify-content:center">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
-        <button class="btn btn-danger btn-xs" onclick="deleteRecruiter('${r.id}')" style="padding:5px 8px">🗑️</button>
+      ${r.notes?`<div class="rc-notes">📝 ${r.notes}</div>`:''}
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        ${r.cvUrl?`<a href="https://docs.google.com/viewer?url=${encodeURIComponent(r.cvUrl)}&embedded=false" target="_blank" class="rc-cv-link">📄 CV — فتح</a>`:`<span class="rc-no-cv">📄 لا يوجد CV</span>`}
+        <span class="rc-meta">📅 ${fmtDate(r.added)}</span>
+      </div>
+      <div class="rc-actions">
+        <button class="rc-btn rc-btn-edit" onclick="openEditRecruiter('${r.id}')">✏️ تعديل</button>
+        <button class="rc-btn ${isContacted?'rc-btn-uncontact':'rc-btn-contact'}" onclick="toggleRecContact('${r.id}')">${isContacted?'↩️ إلغاء':'✅ تواصلنا'}</button>
+        <button class="rc-btn rc-btn-del" onclick="deleteRecruiter('${r.id}')">🗑️</button>
       </div>
     </div>`;
   }).join('');
@@ -2285,7 +2371,8 @@ function deleteRecruiter(id){
     renderRecruiters();
   },'🗑️');
 }
-function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-qual','rec-f-job'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});renderRecruiters()}
+function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-qual','rec-f-job'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';const wrap=document.getElementById('wrap-'+id);if(wrap)wrap.classList.remove('rec-filter-active')});renderRecruiters()}
+function updateFilterStyle(sel,wrapId){const wrap=document.getElementById(wrapId);if(wrap)wrap.classList.toggle('rec-filter-active',!!sel.value)}
 
 // ═══ INIT ═══
 async function init() {

@@ -1207,6 +1207,30 @@ body:not(.is-admin) .admin-only-card{display:none!important}
 </div>
 
 <!-- CONFIRM -->
+<div class="modal-overlay" id="cv-viewer-modal" style="z-index:1500">
+  <div class="modal" style="max-width:900px;width:100%;height:90vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
+    <div class="modal-header" style="padding:12px 16px;flex-shrink:0;display:flex;align-items:center;gap:10px">
+      <div class="modal-title" id="cv-viewer-title">📄 CV</div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <a id="cv-viewer-download" href="#" target="_blank" class="btn btn-outline btn-sm">⬇️ تحميل</a>
+        <button class="modal-close" onclick="closeModal('cv-viewer-modal')">✕</button>
+      </div>
+    </div>
+    <div style="flex:1;position:relative;background:#1a1a2e;min-height:0">
+      <div id="cv-viewer-loading" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:2">
+        <div style="width:36px;height:36px;border:3px solid rgba(245,166,35,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite"></div>
+        <div style="font-size:12px;color:var(--text3)">جاري تحميل الـ CV...</div>
+      </div>
+      <div id="cv-viewer-error" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:2;padding:24px;text-align:center">
+        <div style="font-size:48px">😕</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">مش قادر يعرض الـ CV</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px">جرب التحميل المباشر</div>
+        <a id="cv-viewer-error-dl" href="#" target="_blank" class="btn btn-gold btn-sm">⬇️ تحميل الـ CV</a>
+      </div>
+      <iframe id="cv-viewer-frame" style="width:100%;height:100%;border:none;position:relative;z-index:1" onload="cvFrameLoaded()"></iframe>
+    </div>
+  </div>
+</div>
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
     <div class="confirm-icon" id="confirm-icon">🗑️</div>
@@ -2212,7 +2236,7 @@ function renderRecruiters(){
       </div>
       ${r.notes?`<div class="rc-notes">📝 ${r.notes}</div>`:''}
       <div style="display:flex;align-items:center;justify-content:space-between">
-        ${r.cvUrl?`<a href="${getCvViewUrl(r.cvUrl)}" target="_blank" class="rc-cv-link">📄 CV — فتح</a>`:`<span class="rc-no-cv">📄 لا يوجد CV</span>`}
+        ${r.cvUrl?`<button onclick="openCvViewer('${r.cvUrl}','${(r.cvName||'CV').replace(/'/g,"\\'")}');event.stopPropagation();" class="rc-cv-link" style="background:none;border:none;cursor:pointer;padding:0;font:inherit;color:inherit">📄 CV — فتح</button>`:`<span class="rc-no-cv">📄 لا يوجد CV</span>`}
         <span class="rc-meta">📅 ${fmtDate(r.added)}</span>
       </div>
       <div class="rc-actions">
@@ -2234,16 +2258,61 @@ function switchRecTab(tab){
   if(tab==='cv'){const id=document.getElementById('rec-edit-id').value;const r=STATE.recruiters.find(x=>x.id===id);renderCvCurrent(r);}
 }
 function fixCvUrl(url){if(!url)return url;return url.replace('/image/upload/','/raw/upload/').replace('/video/upload/','/raw/upload/');}
-function getCvViewUrl(url){
-  if(!url)return url;
-  const raw=fixCvUrl(url);
-  // Use Google Docs viewer to open PDFs — avoids Cloudinary 401 issues
-  return 'https://docs.google.com/viewer?url='+encodeURIComponent(raw)+'&embedded=false';
-}
 function getCvDownloadUrl(url){
   if(!url)return url;
-  // Add fl_attachment to force download directly from Cloudinary
   return fixCvUrl(url).replace('/raw/upload/','/raw/upload/fl_attachment/');
+}
+function getCvViewUrl(url){return fixCvUrl(url);}
+let _cvViewerTimer=null;
+function cvFrameLoaded(){
+  clearTimeout(_cvViewerTimer);
+  const fr=document.getElementById('cv-viewer-frame');
+  const loading=document.getElementById('cv-viewer-loading');
+  const err=document.getElementById('cv-viewer-error');
+  // If frame src is empty or about:blank it fires onload too — ignore
+  if(!fr||!fr.src||fr.src==='about:blank')return;
+  try{
+    // Try accessing frame content — if CORS blocked it throws
+    const doc=fr.contentDocument||fr.contentWindow.document;
+    if(doc&&doc.body&&doc.body.innerHTML===''){cvFrameError();return;}
+  }catch(e){}
+  if(loading)loading.style.display='none';
+  if(err)err.style.display='none';
+}
+function cvFrameError(){
+  clearTimeout(_cvViewerTimer);
+  const loading=document.getElementById('cv-viewer-loading');
+  const err=document.getElementById('cv-viewer-error');
+  if(loading)loading.style.display='none';
+  if(err)err.style.display='flex';
+}
+function openCvViewer(url,name){
+  const raw=fixCvUrl(url);
+  const dlUrl=getCvDownloadUrl(url);
+  // Try 3 viewers in sequence: direct → PDF.js CDN → MS Office Online
+  const pdfjs='https://mozilla.github.io/pdf.js/web/viewer.html?file='+encodeURIComponent(raw);
+  const frame=document.getElementById('cv-viewer-frame');
+  const loading=document.getElementById('cv-viewer-loading');
+  const err=document.getElementById('cv-viewer-error');
+  const title=document.getElementById('cv-viewer-title');
+  const dlBtn=document.getElementById('cv-viewer-download');
+  const errDl=document.getElementById('cv-viewer-error-dl');
+  if(title)title.textContent='📄 '+(name||'CV');
+  if(dlBtn){dlBtn.href=dlUrl;}
+  if(errDl){errDl.href=dlUrl;}
+  if(loading)loading.style.display='flex';
+  if(err)err.style.display='none';
+  if(frame){
+    frame.src='';
+    setTimeout(()=>{
+      frame.src=pdfjs;
+      // Fallback: if still loading after 8s → show error with download
+      _cvViewerTimer=setTimeout(()=>{
+        cvFrameError();
+      },8000);
+    },100);
+  }
+  openModal('cv-viewer-modal');
 }
 function renderCvCurrent(r){
   const el=document.getElementById('rec-cv-current');if(!el)return;
@@ -2255,8 +2324,8 @@ function renderCvCurrent(r){
         <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:2px">✅ CV محفوظ</div>
         <div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.cvName||'CV مرفوع'}</div>
       </div>
-      <a href="${getCvViewUrl(r.cvUrl)}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
-      <a href="${getCvDownloadUrl(r.cvUrl)}" target="_blank" class="btn btn-outline btn-xs" download="${r.cvName||'CV.pdf'}">⬇️</a>
+      <button onclick="openCvViewer('${r.cvUrl}','${(r.cvName||'CV').replace(/'/g,"\\'")}');" class="btn btn-success btn-xs">👁️ فتح</button>
+      <a href="${getCvDownloadUrl(r.cvUrl)}" target="_blank" class="btn btn-outline btn-xs">⬇️</a>
       <button class="btn btn-danger btn-xs" onclick="deleteCv('${r.id}')">🗑️</button>
     </div>`;
   } else {

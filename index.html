@@ -2234,7 +2234,17 @@ function switchRecTab(tab){
   if(tab==='cv'){const id=document.getElementById('rec-edit-id').value;const r=STATE.recruiters.find(x=>x.id===id);renderCvCurrent(r);}
 }
 function fixCvUrl(url){if(!url)return url;return url.replace('/image/upload/','/raw/upload/').replace('/video/upload/','/raw/upload/');}
-function getCvViewUrl(url){return fixCvUrl(url);}
+function getCvViewUrl(url){
+  if(!url)return url;
+  const raw=fixCvUrl(url);
+  // Use Google Docs viewer to open PDFs — avoids Cloudinary 401 issues
+  return 'https://docs.google.com/viewer?url='+encodeURIComponent(raw)+'&embedded=false';
+}
+function getCvDownloadUrl(url){
+  if(!url)return url;
+  // Add fl_attachment to force download directly from Cloudinary
+  return fixCvUrl(url).replace('/raw/upload/','/raw/upload/fl_attachment/');
+}
 function renderCvCurrent(r){
   const el=document.getElementById('rec-cv-current');if(!el)return;
   if(r&&r.cvUrl){
@@ -2245,8 +2255,8 @@ function renderCvCurrent(r){
         <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:2px">✅ CV محفوظ</div>
         <div style="font-size:10px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.cvName||'CV مرفوع'}</div>
       </div>
-      <a href="${directUrl}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
-      <a href="${directUrl}" download="${r.cvName||'CV.pdf'}" class="btn btn-outline btn-xs">⬇️</a>
+      <a href="${getCvViewUrl(r.cvUrl)}" target="_blank" class="btn btn-success btn-xs">👁️ فتح</a>
+      <a href="${getCvDownloadUrl(r.cvUrl)}" target="_blank" class="btn btn-outline btn-xs" download="${r.cvName||'CV.pdf'}">⬇️</a>
       <button class="btn btn-danger btn-xs" onclick="deleteCv('${r.id}')">🗑️</button>
     </div>`;
   } else {

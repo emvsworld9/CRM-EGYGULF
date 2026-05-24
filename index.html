@@ -363,6 +363,11 @@ body.is-recruiter #topbar-add-btn{display:none!important}
 .er-pair-divider::before,.er-pair-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 .er-pair-section{background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
 .er-pair-section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.er-pmenu-item{padding:9px 13px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--text2);cursor:pointer;transition:all .15s;font-family:inherit;border:1px solid transparent;margin:2px 0}
+.er-pmenu-item:hover{background:rgba(255,255,255,.07);color:var(--text);border-color:var(--border)}
+.er-pmenu-item.er-pmenu-green:hover{background:rgba(0,229,160,.1);color:var(--green);border-color:rgba(0,229,160,.2)}
+.er-pmenu-item.er-pmenu-amber:hover{background:rgba(255,176,32,.1);color:var(--amber);border-color:rgba(255,176,32,.2)}
+.er-pmenu-item.er-pmenu-blue:hover{background:rgba(61,142,255,.1);color:var(--blue);border-color:rgba(61,142,255,.2)}
 .er-mode-tabs{display:flex;gap:0;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:16px}
 .er-mode-tab{flex:1;padding:7px 4px;text-align:center;font-size:11px;font-weight:600;border-radius:7px;cursor:pointer;color:var(--text3);transition:all .2s;border:none;background:transparent;font-family:inherit}
 .er-mode-tab.active{background:linear-gradient(135deg,rgba(245,166,35,.18),rgba(245,166,35,.06));color:var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.3)}
@@ -866,8 +871,15 @@ body:not(.is-admin) .admin-only-card{display:none!important}
         <div class="er-topbar">
           <div class="section-title" style="margin-bottom:0">&#128203; Employee Report</div>
           <div class="er-controls">
-            <button class="btn btn-outline btn-sm" onclick="erPrint(false)">&#128424;&#65039; طباعة الكل</button>
-            <button class="btn btn-gold btn-sm" onclick="erPrint(true)">&#128293; Interested فقط</button>
+            <div class="er-print-wrap" id="er-print-wrap" style="position:relative">
+              <button class="btn btn-gold btn-sm" onclick="togglePrintMenu(event)">&#128424;&#65039; طباعة <span style="font-size:9px;opacity:.8">&#9660;</span></button>
+              <div id="er-print-menu" style="display:none;position:absolute;top:calc(100% + 6px);left:0;background:linear-gradient(145deg,rgba(10,15,46,.98),rgba(6,9,24,.99));border:1px solid var(--border2);border-radius:12px;padding:6px;z-index:9999;min-width:210px;box-shadow:0 12px 40px rgba(0,0,0,.6);backdrop-filter:blur(20px)">
+                <div onclick="erPrint('all')" class="er-pmenu-item">&#128202; طباعة كل الليدز</div>
+                <div onclick="erPrint('interested')" class="er-pmenu-item er-pmenu-green">&#128293; Interested فقط</div>
+                <div onclick="erPrint('contacted')" class="er-pmenu-item er-pmenu-amber">&#128222; Contacted فقط</div>
+                <div onclick="erPrint('no-new')" class="er-pmenu-item er-pmenu-blue">&#128203; الكل ماعدا New</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="er-mode-tabs">
@@ -2142,8 +2154,24 @@ function erRenderPair(){
   body.innerHTML=header+socialSection+salesSection;
 }
 
-function erPrint(interestedOnly=false) {
-  if(erMode==='pair'){erPrintPair(interestedOnly);return;}
+function togglePrintMenu(e){
+  e.stopPropagation();
+  const m=document.getElementById('er-print-menu');
+  if(!m)return;
+  const isOpen=m.style.display!=='none';
+  m.style.display=isOpen?'none':'block';
+  if(!isOpen){
+    const close=()=>{m.style.display='none';document.removeEventListener('click',close)};
+    setTimeout(()=>document.addEventListener('click',close),10);
+  }
+}
+// filterMode: 'all' | 'interested' | 'contacted' | 'no-new'
+function erPrint(filterMode='all') {
+  document.getElementById('er-print-menu').style.display='none';
+  // legacy boolean support
+  if(filterMode===true)filterMode='interested';
+  if(filterMode===false)filterMode='all';
+  if(erMode==='pair'){erPrintPair(filterMode);return;}
   const sel = document.getElementById('er-emp-select');
   const empId = sel ? sel.value : '';
   if (!empId) { toast('اختر موظف أولاً', 'error'); return; }
@@ -2158,6 +2186,18 @@ function erPrint(interestedOnly=false) {
   const periodLabel = erPeriodLabel();
   const today = new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
 
+  // Determine which leads to show in the table based on filterMode
+  let printLeads, printLabel;
+  if(filterMode==='interested'){
+    printLeads=interested; printLabel='🔥 Interested فقط';
+  } else if(filterMode==='contacted'){
+    printLeads=leads.filter(l=>l.status!=='New'); printLabel='📞 Contacted فقط';
+  } else if(filterMode==='no-new'){
+    printLeads=leads.filter(l=>l.status!=='New'); printLabel='📋 الكل ماعدا New';
+  } else {
+    printLeads=leads; printLabel='📊 كل الليدز';
+  }
+
   const kpiHTML = [
     {label: emp.role==='social'?'Leads أدخلهم':'Leads معاه', val: totalLeads, color:'#3d8eff'},
     {label:'Contacted', val: contacted, color:'#ffb020'},
@@ -2168,8 +2208,9 @@ function erPrint(interestedOnly=false) {
     <div style="font-size:10px;color:#555;margin-top:5px;font-weight:700;letter-spacing:.03em">${k.label}</div>
   </div>`).join('');
 
-  const tableHTML = interested.length
-    ? `<div style="font-size:14px;font-weight:800;color:#0a0f2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5a62350">🔥 عملاء Interested (${interested.length})</div>
+  const statusColor=s=>s==='Interested'?'#dcfce7,#16a34a':s==='Follow-up'?'#ede9fe,#7c3aed':s==='Invoice'?'#fef3c7,#d97706':s==='Closed Won'?'#d1fae5,#065f46':s==='New'?'#dbeafe,#1d4ed8':'#f3f4f6,#374151';
+  const tableHTML = printLeads.length
+    ? `<div style="font-size:14px;font-weight:800;color:#0a0f2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #f5a62350">${printLabel} (${printLeads.length})</div>
        <table style="width:100%;border-collapse:collapse;font-size:12px">
          <thead><tr style="background:#f5a62320">
            <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">#</th>
@@ -2178,17 +2219,17 @@ function erPrint(interestedOnly=false) {
            <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">Status</th>
            <th style="padding:9px 10px;text-align:left;border:1px solid #ddd;font-weight:800;color:#333">ملاحظات</th>
          </tr></thead>
-         <tbody>${interested.map((l,i)=>`
+         <tbody>${printLeads.map((l,i)=>{const[bg,fg]=statusColor(l.status).split(',');return`
            <tr style="background:${i%2===0?'#fff':'#f9fafb'}">
              <td style="padding:9px 10px;border:1px solid #ddd;color:#aaa">${i+1}</td>
              <td style="padding:9px 10px;border:1px solid #ddd;font-weight:700;color:#111">${l.name}</td>
              <td style="padding:9px 10px;border:1px solid #ddd;color:#555">${l.company||'—'}</td>
-             <td style="padding:9px 10px;border:1px solid #ddd"><span style="background:#dcfce7;color:#16a34a;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span></td>
+             <td style="padding:9px 10px;border:1px solid #ddd"><span style="background:${bg};color:${fg};padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span></td>
              <td style="padding:9px 10px;border:1px solid #ddd;color:#555">${l.notes||'—'}</td>
-           </tr>`).join('')}
+           </tr>`}).join('')}
          </tbody>
        </table>`
-    : `<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;border:1px dashed #ddd;border-radius:8px">لا يوجد عملاء Interested في هذه الفترة</div>`;
+    : `<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;border:1px dashed #ddd;border-radius:8px">لا يوجد ليدز في هذا الفلتر في هذه الفترة</div>`;
 
   const html = `<!DOCTYPE html><html lang="ar" dir="rtl"><head>
     <meta charset="UTF-8">
@@ -2218,7 +2259,7 @@ function erPrint(interestedOnly=false) {
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">${interestedOnly?'':kpiHTML}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px">${filterMode==='interested'?'':kpiHTML}</div>
 
     ${tableHTML}
 
@@ -2235,7 +2276,7 @@ function erPrint(interestedOnly=false) {
   w.document.close();
 }
 
-function erPrintPair(interestedOnly=false){
+function erPrintPair(filterMode='all'){
   const socialId=document.getElementById('er-pair-social').value;
   const salesId=document.getElementById('er-pair-sales').value;
   if(!socialId||!salesId){toast('اختر Social وSales أولاً','error');return}
@@ -2244,13 +2285,19 @@ function erPrintPair(interestedOnly=false){
   if(!socialEmp||!salesEmp)return;
   const periodLabel=erPeriodLabel();
   const today=new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+  const statusColor=s=>s==='Interested'?'#dcfce7,#16a34a':s==='Follow-up'?'#ede9fe,#7c3aed':s==='Invoice'?'#fef3c7,#d97706':s==='Closed Won'?'#d1fae5,#065f46':s==='New'?'#dbeafe,#1d4ed8':'#f3f4f6,#374151';
   function buildSection(emp){
     const leads=erGetPeriodLeads(emp.id,emp.role);
     const total=leads.length;
     const contacted=leads.filter(l=>l.status!=='New').length;
     const interested=leads.filter(l=>['Interested','Follow-up','Invoice','Closed Won'].includes(l.status));
-    const kpiH=interestedOnly?'': [{label:emp.role==='social'?'Leads أدخلهم':'Leads معاه',val:total,color:'#3d8eff'},{label:'Contacted',val:contacted,color:'#ffb020'},{label:'Interested',val:interested.length,color:'#00e5a0'},{label:'نسبة الاهتمام',val:(total?Math.round(interested.length/total*100):0)+'%',color:'#9d78ff'}].map(k=>`<div style="border:2px solid ${k.color}40;border-radius:10px;padding:12px;text-align:center;background:${k.color}12"><div style="font-size:28px;font-weight:900;color:${k.color}">${k.val}</div><div style="font-size:9px;color:#555;margin-top:4px;font-weight:700">${k.label}</div></div>`).join('');
-    const tblH=interested.length?`<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f5a62318"><th style="padding:8px;text-align:right;border:1px solid #ddd">#</th><th style="padding:8px;text-align:right;border:1px solid #ddd">اسم العميل</th><th style="padding:8px;text-align:right;border:1px solid #ddd">الشركة</th><th style="padding:8px;text-align:right;border:1px solid #ddd">Status</th><th style="padding:8px;text-align:right;border:1px solid #ddd">ملاحظات</th></tr></thead><tbody>${interested.map((l,i)=>`<tr style="background:${i%2===0?'#fff':'#f9fafb'}"><td style="padding:8px;border:1px solid #ddd;color:#aaa">${i+1}</td><td style="padding:8px;border:1px solid #ddd;font-weight:700;color:#111">${l.name}</td><td style="padding:8px;border:1px solid #ddd;color:#555">${l.company||'—'}</td><td style="padding:8px;border:1px solid #ddd"><span style="background:#dcfce7;color:#16a34a;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span></td><td style="padding:8px;border:1px solid #ddd;color:#555">${l.notes||'—'}</td></tr>`).join('')}</tbody></table>`:`<div style="padding:16px;color:#aaa;font-size:12px;border:1px dashed #ddd;border-radius:6px;text-align:center">لا يوجد عملاء Interested</div>`;
+    let printLeads,printLabel;
+    if(filterMode==='interested'){printLeads=interested;printLabel='🔥 Interested فقط';}
+    else if(filterMode==='contacted'){printLeads=leads.filter(l=>l.status!=='New');printLabel='📞 Contacted فقط';}
+    else if(filterMode==='no-new'){printLeads=leads.filter(l=>l.status!=='New');printLabel='📋 الكل ماعدا New';}
+    else{printLeads=leads;printLabel='📊 كل الليدز';}
+    const kpiH=filterMode==='interested'?'': [{label:emp.role==='social'?'Leads أدخلهم':'Leads معاه',val:total,color:'#3d8eff'},{label:'Contacted',val:contacted,color:'#ffb020'},{label:'Interested',val:interested.length,color:'#00e5a0'},{label:'نسبة الاهتمام',val:(total?Math.round(interested.length/total*100):0)+'%',color:'#9d78ff'}].map(k=>`<div style="border:2px solid ${k.color}40;border-radius:10px;padding:12px;text-align:center;background:${k.color}12"><div style="font-size:28px;font-weight:900;color:${k.color}">${k.val}</div><div style="font-size:9px;color:#555;margin-top:4px;font-weight:700">${k.label}</div></div>`).join('');
+    const tblH=printLeads.length?`<div style="font-size:13px;font-weight:800;color:#0a0f2e;margin-bottom:10px">${printLabel} (${printLeads.length})</div><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:#f5a62318"><th style="padding:8px;text-align:right;border:1px solid #ddd">#</th><th style="padding:8px;text-align:right;border:1px solid #ddd">اسم العميل</th><th style="padding:8px;text-align:right;border:1px solid #ddd">الشركة</th><th style="padding:8px;text-align:right;border:1px solid #ddd">Status</th><th style="padding:8px;text-align:right;border:1px solid #ddd">ملاحظات</th></tr></thead><tbody>${printLeads.map((l,i)=>{const[bg,fg]=statusColor(l.status).split(',');return`<tr style="background:${i%2===0?'#fff':'#f9fafb'}"><td style="padding:8px;border:1px solid #ddd;color:#aaa">${i+1}</td><td style="padding:8px;border:1px solid #ddd;font-weight:700;color:#111">${l.name}</td><td style="padding:8px;border:1px solid #ddd;color:#555">${l.company||'—'}</td><td style="padding:8px;border:1px solid #ddd"><span style="background:${bg};color:${fg};padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700">${l.status}</span></td><td style="padding:8px;border:1px solid #ddd;color:#555">${l.notes||'—'}</td></tr>`}).join('')}</tbody></table>`:`<div style="padding:16px;color:#aaa;font-size:12px;border:1px dashed #ddd;border-radius:6px;text-align:center">لا يوجد ليدز في هذا الفلتر</div>`;
     return`<div style="margin-bottom:24px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid ${emp.color}30"><div style="width:40px;height:40px;border-radius:10px;background:${emp.color};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff">${empInitials(emp.name)}</div><div><div style="font-size:16px;font-weight:900;color:#0a0f2e">${emp.name}</div><div style="font-size:11px;color:#888">${emp.role==='sales'?'Sales Rep':'Social Media'}</div></div></div>${kpiH?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">${kpiH}</div>`:''} ${tblH}</div>`;
   }
   const html=`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>Pair Report — ${socialEmp.name} & ${salesEmp.name}</title><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#fff;color:#000;padding:32px;direction:rtl}@media print{body{padding:20px}}</style></head><body>

@@ -859,6 +859,10 @@ body:not(.is-admin) .admin-only-card{display:none!important}
           <div class="er-chip" onclick="erSetPeriod('week',this)">📆 الأسبوع</div>
           <div class="er-chip" onclick="erSetPeriod('month',this)">🗓 الشهر</div>
           <div class="er-chip" onclick="erSetPeriod('all',this)">📊 الكل</div>
+          <div class="er-chip" onclick="erSetPeriod('specific',this)">🗓 يوم معين</div>
+        </div>
+        <div id="er-date-picker-wrap" style="display:none;margin-bottom:12px">
+          <input type="date" id="er-date-picker" onchange="erRender()" style="background:rgba(255,255,255,.06);border:1.5px solid rgba(245,166,35,.4);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%;max-width:260px;-webkit-appearance:none;cursor:pointer">
         </div>
         <div id="er-body"><div class="er-empty">اختر موظف من القائمة لعرض التقرير</div></div>
         <div id="print-root"></div>
@@ -1969,7 +1973,7 @@ function backupData(){const data={leads:STATE.leads,employees:STATE.employees,pa
 
 // ═══ EMPLOYEE REPORT ═══
 let erPeriod='week';
-function erSetPeriod(p,el){erPeriod=p;document.querySelectorAll('.er-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');erRender()}
+function erSetPeriod(p,el){erPeriod=p;document.querySelectorAll('.er-chip').forEach(c=>c.classList.remove('active'));if(el)el.classList.add('active');const wrap=document.getElementById('er-date-picker-wrap');if(wrap)wrap.style.display=p==='specific'?'block':'none';erRender()}
 function erPopulateSelect(){
   const sel=document.getElementById('er-emp-select');if(!sel)return;
   if(!isAdmin()){
@@ -1994,7 +1998,15 @@ function erGetPeriodLeads(empId,role){
   return STATE.leads.filter(l=>{
     const mine=role==='sales'?l.salesEmp===empId:l.socialEmp===empId;
     if(!mine)return false;
-    const d=new Date(l.updated||l.added);
+    // السوشيال: بتتحسب بتاريخ الإدخال (added) مش التعديل
+    // السيلز: بتتحسب بتاريخ التحديث (updated) أو الإدخال
+    const d=role==='social'?new Date(l.added):new Date(l.updated||l.added);
+    if(erPeriod==='specific'){
+      const pickerEl=document.getElementById('er-date-picker');
+      if(!pickerEl||!pickerEl.value)return false;
+      const picked=new Date(pickerEl.value);
+      return d.toDateString()===picked.toDateString();
+    }
     if(erPeriod==='today')return d.toDateString()===now.toDateString();
     if(erPeriod==='week'){const s=new Date(now);const day=s.getDay();s.setDate(s.getDate()-(day===0?6:day-1));s.setHours(0,0,0,0);return d>=s}
     if(erPeriod==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
@@ -2003,6 +2015,7 @@ function erGetPeriodLeads(empId,role){
 }
 function erPeriodLabel(){
   const now=new Date();const d=n=>n.toString().padStart(2,'0');const fmt=x=>`${d(x.getDate())}/${d(x.getMonth()+1)}/${x.getFullYear()}`;
+  if(erPeriod==='specific'){const pickerEl=document.getElementById('er-date-picker');if(pickerEl&&pickerEl.value){const picked=new Date(pickerEl.value);return`يوم محدد — ${fmt(picked)}`}return'يوم محدد'}
   if(erPeriod==='today')return`اليوم — ${fmt(now)}`;
   if(erPeriod==='week'){const s=new Date(now);const day=s.getDay();s.setDate(s.getDate()-(day===0?6:day-1));s.setHours(0,0,0,0);const e=new Date(s);e.setDate(s.getDate()+6);return`الأسبوع — ${fmt(s)} إلى ${fmt(e)}`}
   if(erPeriod==='month'){const months=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];return`${months[now.getMonth()]} ${now.getFullYear()}`}

@@ -2400,17 +2400,23 @@ function switchRecTab(tab){
 function fixCvUrl(url){if(!url)return url;return url.replace('/image/upload/','/raw/upload/').replace('/video/upload/','/raw/upload/');}
 function getCvDownloadUrl(url){
   if(!url)return url;
-  // Google Drive: convert to direct download
+  // Google Drive
   const driveMatch=url.match(/\/file\/d\/([^/]+)/);
   if(driveMatch)return 'https://drive.google.com/uc?export=download&id='+driveMatch[1];
-  return fixCvUrl(url).replace('/raw/upload/','/raw/upload/fl_attachment/');
+  // Cloudinary: add fl_attachment for force-download
+  const fixed=fixCvUrl(url);
+  if(fixed.includes('cloudinary.com'))return fixed.replace('/raw/upload/','/raw/upload/fl_attachment/');
+  return fixed;
 }
 function getCvViewUrl(url){
   if(!url)return url;
-  // Google Drive: convert to preview link (opens inline)
+  // Google Drive
   const driveMatch=url.match(/\/file\/d\/([^/]+)/);
   if(driveMatch)return 'https://drive.google.com/file/d/'+driveMatch[1]+'/preview';
-  return fixCvUrl(url);
+  // Cloudinary raw: use Google Docs viewer so PDF renders in iframe
+  const fixed=fixCvUrl(url);
+  if(fixed.includes('cloudinary.com'))return 'https://docs.google.com/viewer?url='+encodeURIComponent(fixed)+'&embedded=true';
+  return fixed;
 }
 let _cvViewerTimer=null;
 function cvFrameLoaded(){
@@ -2484,42 +2490,47 @@ async function uploadCvToDrive(file){
   if(lbl)lbl.textContent='جاري تحضير الملف...';
   if(bar)bar.style.width='10%';if(pct)pct.textContent='10%';
   try{
-    // تحويل الملف لـ base64
-    const base64=await new Promise((res,rej)=>{
-      const reader=new FileReader();
-      reader.onload=()=>res(reader.result.split(',')[1]);
-      reader.onerror=()=>rej(new Error('فشل قراءة الملف'));
-      reader.readAsDataURL(file);
-    });
-    if(lbl)lbl.textContent='جاري الرفع على Google Drive...';
-    if(bar)bar.style.width='40%';if(pct)pct.textContent='40%';
-    // JSONP via script tag — الطريقة الوحيدة مع Apps Script بدون CORS
-    const cbName='cvCb_'+Date.now();
-    const result=await new Promise((res,rej)=>{
-      const timer=setTimeout(()=>{delete window[cbName];rej(new Error('انتهى الوقت'));},90000);
-      window[cbName]=function(data){clearTimeout(timer);delete window[cbName];res(data);};
-      const sc=document.createElement('script');
-      sc.src=REC_URL+'?action=uploadCvToDrive'
-        +'&recruiterId='+encodeURIComponent(r.id)
-        +'&fileName='+encodeURIComponent(file.name)
-        +'&mimeType='+encodeURIComponent(file.type||'application/pdf')
-        +'&base64Data='+encodeURIComponent(base64)
-        +'&callback='+cbName;
-      sc.onerror=()=>{clearTimeout(timer);delete window[cbName];rej(new Error('فشل الاتصال بالسيرفر'));};
-      sc.onload=()=>sc.remove();
-      document.head.appendChild(sc);
+    // ─── رفع مباشر على Cloudinary ───
+    const CLOUD_NAME='dfx18pbew';
+    const UPLOAD_PRESET='cvs egy';
+    if(lbl)lbl.textContent='جاري الرفع على Cloudinary...';
+    if(bar)bar.style.width='30%';if(pct)pct.textContent='30%';
+    const formData=new FormData();
+    formData.append('file',file);
+    formData.append('upload_preset',UPLOAD_PRESET);
+    formData.append('folder','recruiters_cvs');
+    formData.append('public_id',r.id+'_'+Date.now());
+    formData.append('resource_type','raw');
+    // Progress via XHR
+    const cvUrl=await new Promise((res,rej)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.upload.onprogress=(e)=>{
+        if(e.lengthComputable){
+          const p=Math.round(30+e.loaded/e.total*60);
+          if(bar)bar.style.width=p+'%';if(pct)pct.textContent=p+'%';
+        }
+      };
+      xhr.onload=()=>{
+        if(xhr.status===200){
+          try{const data=JSON.parse(xhr.responseText);res(data.secure_url);}
+          catch(e){rej(new Error('رد غير صحيح من Cloudinary'));}
+        }else{
+          try{const err=JSON.parse(xhr.responseText);rej(new Error(err.error&&err.error.message?err.error.message:'فشل الرفع ('+xhr.status+')'));}
+          catch{rej(new Error('فشل الرفع — كود: '+xhr.status));}
+        }
+      };
+      xhr.onerror=()=>rej(new Error('فشل الاتصال بـ Cloudinary'));
+      xhr.open('POST','https://api.cloudinary.com/v1_1/'+CLOUD_NAME+'/raw/upload');
+      xhr.send(formData);
     });
     if(bar)bar.style.width='100%';if(pct)pct.textContent='100%';
     if(lbl)lbl.textContent='تم!';
-    if(result&&result.url){
-      r.cvUrl=result.url;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
-      LS.set('recruiters',STATE.recruiters);
-      toast('✅ تم رفع الـ CV على Google Drive','success');
-      renderCvCurrent(r);renderRecruiters();
-      await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl,r.cvName]});
-    } else {
-      throw new Error(result&&result.error?result.error:'فشل الرفع');
-    }
+    // ─── حفظ الـ URL في الـ state والشيت ───
+    r.cvUrl=cvUrl;r.cvName=file.name;r.cvUploadedAt=new Date().toISOString();
+    LS.set('recruiters',STATE.recruiters);
+    toast('✅ تم رفع الـ CV على Cloudinary','success');
+    renderCvCurrent(r);renderRecruiters();
+    await gsPostRec({action:'updateRecruiterRow',id:r.id,row:[r.id,r.name,r.phone,r.job,r.english,r.qualification,r.contactStatus,r.addedBy,r.added,r.cvUrl,r.cvName,r.experience||'',r.governorate||'',r.gradYear||'',r.college||'',r.notes||'']});
   }catch(err){
     toast('❌ '+err.message,'error');
   }finally{

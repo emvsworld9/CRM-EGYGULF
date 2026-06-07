@@ -2078,7 +2078,7 @@ function erGetPeriodLeads(empId,role){
   return STATE.leads.filter(l=>{
     const mine=role==='sales'?l.salesEmp===empId:l.socialEmp===empId;
     if(!mine)return false;
-    const d=role==='social'?new Date(l.added):new Date(l.updated||l.added);
+    const d=new Date(l.added);
     if(erPeriod==='specific'){
       const pickerEl=document.getElementById('er-date-picker');
       if(!pickerEl||!pickerEl.value)return false;

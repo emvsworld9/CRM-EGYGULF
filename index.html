@@ -1376,11 +1376,34 @@ async function gsGet(action,extra=''){
     const cbName='cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const url=`${GS_URL}?action=${action}${extra}&callback=${cbName}`;
     let done=false;
-    window[cbName]=(data)=>{done=true;delete window[cbName];document.getElementById('jsonp-script')?.remove();resolve(data)};
-    const s=document.createElement('script');s.id='jsonp-script';s.src=url;
-    s.onerror=()=>{if(!done)reject(new Error('JSONP failed'))};
+    window[cbName]=(data)=>{
+      done=true;
+      delete window[cbName];
+      const el=document.getElementById(cbName);
+      if(el)el.remove();
+      resolve(data);
+    };
+    const s=document.createElement('script');
+    s.id=cbName;
+    s.src=url;
+    s.onerror=()=>{
+      if(!done){
+        done=true;
+        delete window[cbName];
+        if(s.parentNode)s.remove();
+        reject(new Error('JSONP failed'));
+      }
+    };
     document.body.appendChild(s);
-    setTimeout(()=>{if(!done){done=true;delete window[cbName];reject(new Error('Timeout'))}},15000);
+    setTimeout(()=>{
+      if(!done){
+        done=true;
+        delete window[cbName];
+        const el=document.getElementById(cbName);
+        if(el)el.remove();
+        reject(new Error('Timeout'));
+      }
+    },15000);
   });
 }
 async function gsPost(body){
@@ -1392,11 +1415,34 @@ async function gsPostRec(params){
     let query=Object.keys(params).map(k=>`${k}=${encodeURIComponent(typeof params[k]==='object'?JSON.stringify(params[k]):params[k])}`).join('&');
     const url=`${REC_URL}?${query}&callback=${cbName}`;
     let done=false;
-    window[cbName]=(data)=>{done=true;delete window[cbName];document.getElementById('rec-jsonp')?.remove();resolve(data)};
-    const s=document.createElement('script');s.id='rec-jsonp';s.src=url;
-    s.onerror=()=>{if(!done){done=true;delete window[cbName];resolve(null)}};
+    window[cbName]=(data)=>{
+      done=true;
+      delete window[cbName];
+      const el=document.getElementById(cbName);
+      if(el)el.remove();
+      resolve(data);
+    };
+    const s=document.createElement('script');
+    s.id=cbName;
+    s.src=url;
+    s.onerror=()=>{
+      if(!done){
+        done=true;
+        delete window[cbName];
+        if(s.parentNode)s.remove();
+        resolve(null);
+      }
+    };
     document.body.appendChild(s);
-    setTimeout(()=>{if(!done){done=true;delete window[cbName];resolve(null)}},10000);
+    setTimeout(()=>{
+      if(!done){
+        done=true;
+        delete window[cbName];
+        const el=document.getElementById(cbName);
+        if(el)el.remove();
+        resolve(null);
+      }
+    },10000);
   });
 }
 

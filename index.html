@@ -30,25 +30,8 @@
   --bottom-nav-h:64px;
   --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-html[data-theme="light"]{
-  --navy:#0a0f2e;--navy2:#141d4f;--navy3:#1e2d7d;
-  --gold:#d4750a;--gold2:#f5a623;--gold3:#fff3d6;
-  --bg:#f4f5fa;--surface:rgba(10,15,46,.035);--surface2:rgba(10,15,46,.06);--surface3:rgba(10,15,46,.02);
-  --glass:rgba(255,255,255,.85);--glass2:rgba(10,15,46,.04);
-  --text:#12162e;--text2:#4a5178;--text3:#8890b5;
-  --border:rgba(10,15,46,.09);--border2:rgba(10,15,46,.15);
-  --green:#00a876;--green-bg:rgba(0,168,118,.09);
-  --red:#e02050;--red-bg:rgba(224,32,80,.08);
-  --amber:#c67c00;--amber-bg:rgba(198,124,0,.09);
-  --blue:#2568d8;--blue-bg:rgba(37,104,216,.08);
-  --purple:#7c52e0;--purple-bg:rgba(124,82,224,.08);
-  --cyan:#0098a8;--cyan-bg:rgba(0,152,168,.08);
-}
-html[data-theme="light"] body::before{background:radial-gradient(ellipse 70% 60% at 15% -5%,rgba(30,45,125,.08),transparent),radial-gradient(ellipse 40% 50% at 88% 105%,rgba(245,166,35,.06),transparent),radial-gradient(ellipse 55% 40% at 55% 50%,rgba(255,255,255,.9),transparent)}
-html[data-theme="light"] body::after{background-image:linear-gradient(rgba(10,15,46,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(10,15,46,.03) 1px,transparent 1px)}
-html[data-theme="light"] .orb1{background:rgba(30,45,125,.08)}
-html[data-theme="light"] .orb2{background:rgba(245,166,35,.1)}
-html[data-theme="light"] .orb3{background:rgba(157,120,255,.1)}
+html[data-theme="light"]{filter:invert(1) hue-rotate(180deg);background:#fff}
+html[data-theme="light"] body{background:#fff}
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);position:relative}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 60% at 15% -5%,rgba(30,45,125,.6),transparent),radial-gradient(ellipse 40% 50% at 88% 105%,rgba(245,166,35,.07),transparent),radial-gradient(ellipse 55% 40% at 55% 50%,rgba(10,15,46,.95),transparent);z-index:0;pointer-events:none}

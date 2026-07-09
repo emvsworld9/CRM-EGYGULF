@@ -1395,7 +1395,7 @@ function scanAllDuplicates(){
 }
 
 // ═══ GS API ═══
-async function gsGet(action,extra=''){
+async function gsGet(action,extra='',timeoutMs=28000){
   return new Promise((resolve,reject)=>{
     const cbName='cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
     const url=`${GS_URL}?action=${action}${extra}&callback=${cbName}`;
@@ -1415,7 +1415,7 @@ async function gsGet(action,extra=''){
         done=true;
         delete window[cbName];
         if(s.parentNode)s.remove();
-        reject(new Error('JSONP failed'));
+        reject(new Error('JSONP failed (network/script error)'));
       }
     };
     document.body.appendChild(s);
@@ -1425,9 +1425,9 @@ async function gsGet(action,extra=''){
         delete window[cbName];
         const el=document.getElementById(cbName);
         if(el)el.remove();
-        reject(new Error('Timeout'));
+        reject(new Error('Timeout after '+timeoutMs+'ms'));
       }
-    },15000);
+    },timeoutMs);
   });
 }
 async function gsPost(body){
@@ -1505,7 +1505,7 @@ function loadCachedServerData(){
 function saveCachedServerData(){
   LS.set('serverDataCache',{employees:STATE.employees,leads:STATE.leads,pairs:STATE.pairs,invoices:STATE.invoices,visits:STATE.visits,comments:STATE.comments,savedAt:new Date().toISOString()});
 }
-async function syncNow(silent=false,retries=2){
+async function syncNow(silent=false,retries=4,attempt=0){
   setSyncIndicator('syncing');
   try{
     const data=await gsGet('getAll');
@@ -1527,11 +1527,15 @@ async function syncNow(silent=false,retries=2){
     refreshCurrentView();
     return true;
   }catch(e){
+    console.warn('[syncNow] attempt '+(attempt+1)+' failed:',e.message);
     if(retries>0){
-      await new Promise(r=>setTimeout(r,1500));
-      return syncNow(silent,retries-1);
+      await new Promise(r=>setTimeout(r,1500+attempt*1500));
+      return syncNow(silent,retries-1,attempt+1);
     }
-    setSyncIndicator('error');if(!silent)toast('Sync failed: '+e.message,'error');return false;
+    setSyncIndicator('error');
+    if(!silent)toast('Sync failed: '+e.message,'error');
+    console.error('[syncNow] all attempts failed. Last error:',e.message);
+    return false;
   }
 }
 // يعيد رسم الشاشة الحالية بعد ما تجيله بيانات جديدة من السيرفر في الخلفية، من غير ما يقفل أي مودال مفتوح
@@ -2750,11 +2754,21 @@ async function init() {
     showAppFromCacheOrEmpty();
     syncNow(true).catch(()=>{}); // مزامنة صامتة في الخلفية، فيها Retry تلقائي جواها
   } else {
-    // مفيش كاش (أول مرة على الجهاز ده): لازم نستنى السيرفر، بس مع محاولات إعادة
+    // مفيش كاش (أول مرة على الجهاز ده): نستنى أول محاولة بس (مش كل الـ retries)
+    // عشان الشاشة متفضلش واقفة لو السيرفر بطيء، وبعدين نكمل نحاول في الخلفية
     if(msgEl) msgEl.textContent = 'Loading data...';
-    await syncNow(true);
+    let succeeded = false;
+    const firstTry = syncNow(true, 0).then(ok=>{succeeded=ok; return ok});
+    await Promise.race([
+      firstTry,
+      new Promise(r=>setTimeout(r, 8000))
+    ]);
     hideAppLoading();
     showAppFromCacheOrEmpty();
+    if (!succeeded) {
+      // لسه ماجابش بيانات (سواء فشل أو لسه شغال): كمّل تحاول في الخلفية من غير ما توقف اليوزر
+      firstTry.then(ok=>{ if(!ok) syncNow(true, 4).catch(()=>{}) });
+    }
   }
 }
 init();

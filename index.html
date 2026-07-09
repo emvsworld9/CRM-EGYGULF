@@ -1485,7 +1485,27 @@ function rowToVisit(row){if(!row||!row[0])return null;return{id:String(row[0]),l
 function rowToComment(row){if(!row||!row[0])return null;return{id:String(row[0]),leadId:String(row[1]||''),authorId:String(row[2]||''),authorName:String(row[3]||''),text:String(row[4]||''),date:String(row[5]||'')}}
 
 // ═══ SYNC ═══
-async function syncNow(silent=false){
+// يحمّل آخر نسخة محفوظة محلياً من بيانات السيرفر (leads/employees/...) عشان نعرض التطبيق فوراً من غير انتظار
+function loadCachedServerData(){
+  const cached=LS.get('serverDataCache',null);
+  if(cached){
+    STATE.employees=cached.employees||[];
+    STATE.leads=cached.leads||[];
+    STATE.pairs=cached.pairs||[];
+    STATE.invoices=cached.invoices||[];
+    STATE.visits=cached.visits||[];
+    STATE.comments=cached.comments||[];
+  }
+  STATE.notifications=LS.get('notifications',[]);
+  STATE.dupLog=LS.get('dupLog',[]);
+  STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
+  STATE.recruiters=LS.get('recruiters',[]);
+  return !!cached;
+}
+function saveCachedServerData(){
+  LS.set('serverDataCache',{employees:STATE.employees,leads:STATE.leads,pairs:STATE.pairs,invoices:STATE.invoices,visits:STATE.visits,comments:STATE.comments,savedAt:new Date().toISOString()});
+}
+async function syncNow(silent=false,retries=2){
   setSyncIndicator('syncing');
   try{
     const data=await gsGet('getAll');
@@ -1501,10 +1521,27 @@ async function syncNow(silent=false){
     STATE.dupLog=LS.get('dupLog',[]);
     STATE.dupStats=LS.get('dupStats',{today:0,total:0,merged:0,pending:0});
     STATE.recruiters=LS.get('recruiters',[]);
+    saveCachedServerData();
     setSyncIndicator('ok');updateSyncStatus();
     if(!silent)toast('✅ Synced — '+STATE.leads.length+' leads','success');
+    refreshCurrentView();
     return true;
-  }catch(e){setSyncIndicator('error');if(!silent)toast('Sync failed: '+e.message,'error');return false}
+  }catch(e){
+    if(retries>0){
+      await new Promise(r=>setTimeout(r,1500));
+      return syncNow(silent,retries-1);
+    }
+    setSyncIndicator('error');if(!silent)toast('Sync failed: '+e.message,'error');return false;
+  }
+}
+// يعيد رسم الشاشة الحالية بعد ما تجيله بيانات جديدة من السيرفر في الخلفية، من غير ما يقفل أي مودال مفتوح
+function refreshCurrentView(){
+  try{
+    const loginScreen=document.getElementById('login-screen');
+    if(loginScreen && !loginScreen.classList.contains('hidden')){populateLoginSelect();return}
+    if(document.body.classList.contains('is-recruiter')){renderRecruiters();return}
+    if(typeof renderDashboard==='function')renderDashboard();
+  }catch(e){}
 }
 function setSyncIndicator(state){
   const dot=document.getElementById('sync-dot'),label=document.getElementById('sync-label');
@@ -2692,14 +2729,33 @@ function clearRecFilters(){['rec-f-date','rec-f-status','rec-f-english','rec-f-q
 function updateFilterStyle(sel,wrapId){const wrap=document.getElementById(wrapId);if(wrap)wrap.classList.toggle('rec-filter-active',!!sel.value)}
 
 // ═══ INIT ═══
-async function init() {
-  document.getElementById('app-loading-msg').textContent = 'Loading data...';
-  await syncNow(true);
-  const appLoading = document.getElementById('app-loading'); appLoading.style.opacity = '0'; appLoading.style.transition = 'opacity .4s'; setTimeout(() => appLoading.style.display = 'none', 400);
+function hideAppLoading(){
+  const appLoading = document.getElementById('app-loading');
+  if(!appLoading || appLoading.style.display==='none')return;
+  appLoading.style.opacity = '0'; appLoading.style.transition = 'opacity .4s';
+  setTimeout(() => appLoading.style.display = 'none', 400);
+}
+function showAppFromCacheOrEmpty(){
   const saved = getSession();
   if (saved && saved.user) { SESSION = saved; enterApp(); return; }
   populateLoginSelect();
   const ls = document.getElementById('login-screen'); ls.classList.remove('hidden'); ls.style.opacity = '0'; setTimeout(() => { ls.style.opacity = '1'; ls.style.transition = 'opacity .4s'; }, 10);
+}
+async function init() {
+  const msgEl = document.getElementById('app-loading-msg');
+  const hasCache = loadCachedServerData(); // نجيب أي بيانات محفوظة محلياً من قبل عشان نعرضها فوراً
+  if (hasCache) {
+    // فيه كاش: نفتح التطبيق على طول بيه، ونزامن مع السيرفر في الخلفية من غير ما نستنى
+    hideAppLoading();
+    showAppFromCacheOrEmpty();
+    syncNow(true).catch(()=>{}); // مزامنة صامتة في الخلفية، فيها Retry تلقائي جواها
+  } else {
+    // مفيش كاش (أول مرة على الجهاز ده): لازم نستنى السيرفر، بس مع محاولات إعادة
+    if(msgEl) msgEl.textContent = 'Loading data...';
+    await syncNow(true);
+    hideAppLoading();
+    showAppFromCacheOrEmpty();
+  }
 }
 init();
 </script>
